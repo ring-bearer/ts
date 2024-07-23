@@ -1,0 +1,4 @@
+1. Turingov stroj za parne palindrome (riječi oblika ww^R):
+https://www.geeksforgeeks.org/turing-machine-to-check-whether-given-string-is-even-palindrome-or-not/
+2. Turingov stroj za riječi oblika 0^n1^n2^n:
+https://www.javatpoint.com/examples-of-turing-machine

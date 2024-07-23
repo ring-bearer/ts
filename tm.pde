@@ -3,10 +3,41 @@ class tm{
   int h=60;
   int tilew=50;
   int head=0;
+  int state=0;
+  char[] alphabet;
+  char[][] delta;
   String content="";
   
-  tm(int y){
+  tm(int y, char[] alph, char[][] delta){
     this.y=y;
+    alphabet=alph;
+    this.delta=delta;
+  }
+  
+  int work(){
+    if(millis()-lastTime<time) return state;
+    if(state==-1 || state==-2) return state;
+    
+    boolean change=false;
+    for(int i=0;i<delta.length;i++){
+      char reading;
+      if(head>=content.length()) reading=' ';
+      else reading=content.charAt(head);
+      if(delta[i][0]==state && delta[i][1]==reading){
+        if(delta[i][2]=='t') state=-1;
+        else if (delta[i][2]=='f') state=-2;
+        else state=delta[i][2];
+        write(delta[i][3],delta[i][4]);
+        change=true;
+        break;
+      }
+    }
+    
+    if(!change)
+      state=-2;
+    
+    lastTime=millis();
+    return state;
   }
   
   void drawHead(int pos){
@@ -28,6 +59,7 @@ class tm{
   void start(){
     drawTape();
     head=0;
+    state=0;
     drawHead(head);
     input(content);
   }
@@ -47,10 +79,10 @@ class tm{
     if(head>=content.length()) r=' ';
     else r=content.charAt(head);
     if(r==c){
-      if(dir>=0){
+      if(dir==1){
       head++;
       }
-      else{
+      else if (dir<=0){
         head--;
         if(head<0) head=0;
       }
@@ -64,87 +96,102 @@ class tm{
   }
 
   char read(int dir){
-    char r;
-    if(head>=content.length()) r=' ';
-    else r=content.charAt(head);
-    
-    if(dir>=0){
-      head++;
-    }
-    else{
-      head--;
-      if(head<0) head=0;
-    }
-    
-    if(head>10){
-      if(dir>=0)
-        x=x-tilew;
+      char r;
+      if(head>=content.length()) r=' ';
+      else r=content.charAt(head);
+      
+      if(dir==1){
+        head++;
+      }
+      else if (dir<=0){
+        head--;
+        if(head<0) head=0;
+      }
+      
+      if(head>10){
+        if(dir==1)
+          x=x-tilew;
+        else if (dir<=0)
+          x=x+tilew;
+      }
       else
-        x=x+tilew;
-    }
-    else
-      x=30;
-    
-    update();
-    return r;
+        x=30;
+     
+      update();
+      return r;
   }
   
   void write(char c, int dir){
     int len=content.length();
-    String s1,s2;
-    if(head>len){
-      s1=content;
-      for(int i=len;i<head;i++){
-        s1=s1+' ';
-      }
-      s2="";
-    }
-    else{
-      s1=content.substring(0,head);
-      if(head+1<=len)
-        s2=content.substring(head+1);
-      else
+      String s1,s2;
+      if(head>len){
+        s1=content;
+        for(int i=len;i<head;i++){
+          s1=s1+' ';
+        }
         s2="";
-    }
-    String novi=s1+c+s2;
-    println(novi);
-    for(int i=novi.length();i>=1;){
-      println(i);
-      if(novi.charAt(i-1)==' '){
-        novi=novi.substring(0,i-1);
-        i=novi.length();
       }
-      else break;
-    }
-    content=novi;
-    
-    if(dir>=0){
-      head++;
-    }
-    else{
-      head--;
-      if(head<0) head=0;
-    }
-    
-    if(head>10){
-      if(dir>=0)
-        x=x-tilew;
+      else{
+        s1=content.substring(0,head);
+        if(head+1<=len)
+          s2=content.substring(head+1);
+        else
+          s2="";
+      }
+      String novi=s1+c+s2;
+      println(novi);
+      for(int i=novi.length();i>=1;){
+        println(i);
+        if(novi.charAt(i-1)==' '){
+          novi=novi.substring(0,i-1);
+          i=novi.length();
+        }
+        else break;
+      }
+      content=novi;
+      
+      if(dir==1){
+        head++;
+      }
+      else if (dir<=0){
+        head--;
+        if(head<0) head=0;
+      }
+      
+      if(head>10){
+        if(dir==1)
+          x=x-tilew;
+        else if (dir<=0)
+          x=x+tilew;
+      }
       else
-        x=x+tilew;
-    }
-    else
-      x=30;
-    
-    update();
+        x=30;
+            
+      update();
   }
   
   String readAll(){
     char r;
     if(millis()-lastTime>time){
-      r=read(1);
-      lastTime=millis();
-    }
-    return content;
+        if(l==0) l=head;
+        if(l>=content.length()) {
+          key=RIGHT;
+          l=0;
+          return content;
+        }
+        r=read(1);
+        lastTime=millis();
+        l++;
+        
+      }
+     return content;
+   /* r=read(l);
+    if(r=='0') return " ";
+    else l++;
+      if(l==content.length()) {
+        key=RIGHT;
+        l=0;
+      }*/
   }
   
   void update(){
