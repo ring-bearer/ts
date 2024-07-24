@@ -1,12 +1,9 @@
-//content myb char[] inst string??
+//char none=Character.MIN_VALUE;
 
 char[] al={'a','b'};
 char[][] delta={
 {0,'a',7,'a',2},
 {0,'b',7,'b',2},
-{7,'a',1,' ',1},
-{7,'b',4,' ',1},
-{7,' ','t',' ',1},
 {1,'a',1,'a',1},
 {1,'b',1,'b',1},
 {1,' ',2,' ',0},
@@ -21,7 +18,38 @@ char[][] delta={
 {6,'a',6,'a',0},
 {6,'b',6,'b',0},
 {6,' ',7,' ',1},
+{7,'a',1,' ',1},
+{7,'b',4,' ',1},
+{7,' ','t',' ',1},
 };
+
+
+char[][] deltaTape1={
+{0,'a',4,'a',1},
+{0,'a',1,'a',1},
+{0,'b',5,'b',1},
+{0,'b',1,'b',1},
+{1,'a',2,'a',1},
+{1,'b',3,'b',1}
+};
+char[][] deltaTape2={
+{0,' ',1,' ',2},
+{1,' ','t',' ',1},
+{2,'a',1,' ',0},
+{3,'b',1,' ',0},
+{4,' ',0,'a',1},
+{5,' ',0,'b',1}
+};
+int b=2;
+char[] address={'1','2'};
+
+tm first=new tm(30,al,deltaTape1);
+tm second=new tm(150,al,deltaTape2);
+tm third=new tm(270,address,null);
+tm fourth=new tm(390,address,null);
+
+tm[] tapes={first,second,third,fourth};
+machine stroj=new machine(tapes);
 
 char[] al2={'0','1','2'};
 char[][] delta2={
@@ -43,24 +71,25 @@ char[][] delta2={
   {4,' ','t',' ',1},
 };
 
-tm stroj=new tm(30,al2,delta2);
+String input="012";
 
 long time=1000;
-int lastTime;
+int lastTime,lastTimeKod;
 boolean lastPressed=false;
 boolean lastMousePressed=false;
 //tm stroj2=new tm(130,al,delta);
 int l=0;
 int korak=1;
 int state=0;
+char[] tempRead={};
 
 void setup() {
   size(640, 640);
   background(200);
   stroj.start();
   //stroj2.start();
-  stroj.input("abba");
   lastTime=millis();
+  lastTimeKod=millis();
 }
 
 void draw() {
@@ -72,42 +101,39 @@ void draw() {
     lastMousePressed=true;
   }
   if (lastMousePressed){
-    state=stroj.work();
-    if(state==-1){
-      fill(200);
-      noStroke();
-      rect(0,150,width,height);
-      lastMousePressed=false;
-      fill(0);
-      text("accept",100,200);
-      stroj.state=0;
-    }
-    if(state==-2){
-      fill(200);
-      noStroke();
-      rect(0,150,width,height);
-      lastMousePressed=false;
-      fill(0);
-      text("reject",100,200);
-      stroj.state=0;
-    }
+    kod();
   }
 }
 
 void kod(){
-  //if(millis()-lastTime<time) return;
+  if(millis()-lastTimeKod<time) return;
   
-  /*if(korak==1){
-    stroj.write('a',1);
+  if(korak==1){
+    char[] inp=input.toCharArray();
+    stroj.input(inp);
   }
   if(korak==2){
-    stroj.write('b',1);
+    if(stroj.state==-1)
+      println("accept");
+    else if(stroj.state==-2)
+      println("reject");
+    else
+      println("nastavljam s radom");
   }
   if(korak==3){
-    stroj.write('c',1);
+    stroj.write('1',1,fourth);
+  }
+  if(korak==4){
+    char[] adresa=stroj.readAll(fourth);
+    if(adresa==null || l==0){
+        lastTimeKod=millis();
+        return;
+    }
+    String s=new String(adresa);
+    println("adresa=" + s);
     lastMousePressed=false;
   }
-  lastTime=millis();
+  lastTimeKod=millis();
   korak++;
   /*if(millis()-lastTime>time){
     stroj.write('c',1);
@@ -117,7 +143,7 @@ void kod(){
 }
 
 void press() {
-  if (keyCode==RIGHT) {
+   /*if (keyCode==RIGHT) {
     stroj.read(1);
   }
   else if (keyCode==LEFT) {
@@ -134,5 +160,5 @@ void press() {
   }
   else{
     stroj.write(key,1);
-  }
+  }*/
 }

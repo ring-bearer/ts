@@ -1,3 +1,38 @@
+class machine{
+  tm[] tapes;
+  int state;
+  
+  machine(tm[] tapes){
+    this.tapes=tapes;
+  }
+  
+  void start(){
+    state=0;
+    for(int i=0;i<tapes.length;i++){
+      tapes[i].start();
+    }
+  }
+  
+  void input(char[] s){
+    tapes[0].input(s);
+  }
+  
+  void write(char c, int dir, tm tape){
+    tape.write(c,dir);
+  }
+  
+  char[] readAll(tm tape){
+    return tape.readAll();
+  }
+  
+  int work(){
+    for(int i=0;i<tapes.length;i++){
+      
+    }
+    return state;
+  }
+}
+
 class tm{
   int x=30,y;
   int h=60;
@@ -6,12 +41,38 @@ class tm{
   int state=0;
   char[] alphabet;
   char[][] delta;
-  String content="";
+  char[] content={};
   
   tm(int y, char[] alph, char[][] delta){
     this.y=y;
     alphabet=alph;
     this.delta=delta;
+  }
+  
+  int worknd(){
+    if(millis()-lastTime<time) return state;
+    if(state==-1 || state==-2) return state;
+    
+    boolean change=false;
+    for(int i=0;i<delta.length;i++){
+      char reading;
+      if(head>=content.length) reading=' ';
+      else reading=content[head];
+      if(delta[i][0]==state && delta[i][1]==reading){
+        if(delta[i][2]=='t') state=-1;
+        else if (delta[i][2]=='f') state=-2;
+        else state=delta[i][2];
+        write(delta[i][3],delta[i][4]);
+        change=true;
+        break;
+      }
+    }
+    
+    if(!change)
+      state=-2;
+    
+    lastTime=millis();
+    return state;
   }
   
   int work(){
@@ -21,8 +82,8 @@ class tm{
     boolean change=false;
     for(int i=0;i<delta.length;i++){
       char reading;
-      if(head>=content.length()) reading=' ';
-      else reading=content.charAt(head);
+      if(head>=content.length) reading=' ';
+      else reading=content[head];
       if(delta[i][0]==state && delta[i][1]==reading){
         if(delta[i][2]=='t') state=-1;
         else if (delta[i][2]=='f') state=-2;
@@ -64,20 +125,20 @@ class tm{
     input(content);
   }
   
-  void input(String s){
+  void input(char[] s){
     content=s;
     fill(0);
     textSize(50);
     textAlign(CENTER);
-    for(int i=0;i<s.length();i++){
-      text(content.charAt(i),x+i*tilew+tilew/2,y+h-10);
+    for(int i=0;i<s.length;i++){
+      text(content[i],x+i*tilew+tilew/2,y+h-10);
     }
   }    
 
   char readChar(char c, int dir){
     char r;
-    if(head>=content.length()) r=' ';
-    else r=content.charAt(head);
+    if(head>=content.length) r=' ';
+    else r=content[head];
     if(r==c){
       if(dir==1){
       head++;
@@ -97,8 +158,8 @@ class tm{
 
   char read(int dir){
       char r;
-      if(head>=content.length()) r=' ';
-      else r=content.charAt(head);
+      if(head>=content.length) r=' ';
+      else r=content[head];
       
       if(dir==1){
         head++;
@@ -122,8 +183,13 @@ class tm{
   }
   
   void write(char c, int dir){
-    int len=content.length();
-      String s1,s2;
+    if(head>=content.length){
+       for(int i=content.length;i<=head;i++){
+         content=append(content,' ');
+       }
+    }
+    content[head]=c;
+     /* String s1,s2;
       if(head>len){
         s1=content;
         for(int i=len;i<head;i++){
@@ -149,7 +215,7 @@ class tm{
         else break;
       }
       content=novi;
-      
+      */
       if(dir==1){
         head++;
       }
@@ -170,21 +236,26 @@ class tm{
       update();
   }
   
-  String readAll(){
-    char r;
+  char[] readAll(){
+    char[] r={};
     if(millis()-lastTime>time){
-        if(l==0) l=head;
-        if(l>=content.length()) {
+        if(l>=content.length){
           key=RIGHT;
           l=0;
-          return content;
+          return r;
         }
-        r=read(1);
-        lastTime=millis();
-        l++;
-        
+        if(head>0){
+          read(-1);
+          lastTime=millis();
+        }
+        else{
+          char c=read(1);
+          r=append(tempRead,c);
+          lastTime=millis();
+          l++;
+        }
       }
-     return content;
+     return r;
    /* r=read(l);
     if(r=='0') return " ";
     else l++;
