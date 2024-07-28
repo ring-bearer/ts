@@ -73,10 +73,11 @@ class machine{
     char[][] confs=delta[adr];
     for(int i=0;i<confs.length;i++){
       if(confs[i]==null) continue;
-      tapes[i].state=confs[i][2];
-      state=confs[i][2];
-      int confs4=confs[i][4]-'0';
-      tapes[i].write(confs[i][3],confs4);
+      int confsHelp=confs[i][2]-'0';
+      tapes[i].state=confsHelp;
+      state=confsHelp;
+      confsHelp=confs[i][4]-'0';
+      tapes[i].write(confs[i][3],confsHelp);
       println("pis");
     }
   }
@@ -91,10 +92,16 @@ class tm{
   char[] alphabet;
   char[][] delta;
   char[] content={};
+  int[] alphabetInt;
+  int[] contentInt={};
   
   tm(int y, char[] alph, char[][] delta){
     this.y=y;
     alphabet=alph;
+    for(int i=0;i<alphabet.length;i++){
+      int novi=alphabet[i]+'0';
+      alphabetInt=append(alphabetInt,novi);
+    }
     this.delta=delta;
   }
   
@@ -166,6 +173,10 @@ class tm{
   
   void input(char[] s){
     content=s;
+    for(int i=0;i<content.length;i++){
+      int novi=content[i]+'0';
+      contentInt=append(contentInt,novi);
+    }
     fill(0);
     textSize(50);
     textAlign(CENTER);
@@ -278,6 +289,89 @@ class tm{
       redraw();
   }
   
+  int readInt(int dir){
+      int r;
+      if(head>=contentInt.length) r=' ';
+      else r=contentInt[head];
+      
+      if(dir==1){
+        head++;
+      }
+      else if (dir<=0){
+        head--;
+        if(head<0) head=0;
+      }
+      
+      if(head>10){
+        if(dir==1)
+          x=x-tilew;
+        else if (dir<=0)
+          x=x+tilew;
+      }
+      else
+        x=30;
+     
+      redraw();
+      return r;
+  }
+  
+  void writeInt(int c, int dir){
+    if(head>=content.length){
+       for(int i=contentInt.length;i<=head;i++){
+         contentInt=append(contentInt,' ');
+       }
+    }
+    contentInt[head]=c;
+    println(contentInt[head]);
+     /* String s1,s2;
+      if(head>len){
+        s1=content;
+        for(int i=len;i<head;i++){
+          s1=s1+' ';
+        }
+        s2="";
+      }
+      else{
+        s1=content.substring(0,head);
+        if(head+1<=len)
+          s2=content.substring(head+1);
+        else
+          s2="";
+      }
+      String novi=s1+c+s2;
+      println(novi);
+      for(int i=novi.length();i>=1;){
+        println(i);
+        if(novi.charAt(i-1)==' '){
+          novi=novi.substring(0,i-1);
+          i=novi.length();
+        }
+        else break;
+      }
+      content=novi;
+      */
+      if(dir==1){
+        head++;
+      }
+      else if (dir<=0){
+        head--;
+        if(head<0) head=0;
+      }
+      
+      if(head>10){
+        if(dir==1)
+          x=x-tilew;
+        else if (dir<=0)
+          x=x+tilew;
+      }
+      else
+        x=30;
+        
+      println("head je " + head);
+            
+      redraw();
+  }
+  
   void goToEnd(){
     while(head<content.length)
       read(1);
@@ -319,6 +413,7 @@ class tm{
     drawTape();
     drawHead(head);
     input(content);
+    contentInt=
     return;
   }
 }

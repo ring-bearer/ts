@@ -26,31 +26,31 @@ char[][] delta={
 
 
 char[][] deltaTape1={
-{'0','a','4','a','1'},
 {'0','a','1','a','1'},
-{'0','b','5','b','1'},
 {'0','b','1','b','1'},
 {'1','a','2','a','1'},
-{'1','b','3','b','1'}
+{'1','b','3','b','1'},
+{'0','a','4','a','1'},
+{'0','b','5','b','1'},
 };
 char[][] deltaTape2={
 {'0',' ','1',' ','2'},
-{'1',' ','t',' ','1'},
 {'2','a','1',' ','0'},
 {'3','b','1',' ','0'},
+{'1',' ','t',' ','1'},
 {'4',' ','0','a','1'},
 {'5',' ','0','b','1'}
 };
 char[][][] d={
+ {deltaTape1[0],deltaTape2[0]},
  {deltaTape1[1],deltaTape2[0]},
- {deltaTape1[3],deltaTape2[0]},
- {deltaTape1[0],null},
  {deltaTape1[2],null},
- {deltaTape1[4],null},
- {deltaTape1[5],null},
+ {deltaTape1[3],null},
  {null,deltaTape2[1]},
  {null,deltaTape2[2]},
  {null,deltaTape2[3]},
+ {deltaTape1[4],null},
+ {deltaTape1[5],null},
  {null,deltaTape2[4]},
  {null,deltaTape2[5]},
 };
@@ -187,7 +187,9 @@ void kod(){
   }
   if(korak==6){
     if (!stroj.returnToStart(fourth)) return;
-    if (!stroj.returnToStart(third)) return;
+    if (!stroj.returnToStart(first)) return;
+    if (!stroj.returnToStart(second)) return;
+    stroj.state=0;
   }
   if(korak==7){
     int getDio=stroj.getDio(adresa);
@@ -256,7 +258,13 @@ void kod(){
     if(temp!=' '){
       int intTemp=temp-'0';
       println(intTemp);
-      if(stroj.check(intTemp)) stroj.work(intTemp);
+      if(stroj.check(intTemp)){ 
+        stroj.work(intTemp);
+      }
+      else{
+        stroj.state='f';
+        korak++;
+      }
       return;
     }
   }
