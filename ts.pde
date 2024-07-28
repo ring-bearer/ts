@@ -24,32 +24,41 @@ char[][] delta={
 };
 
 
+
 char[][] deltaTape1={
-{0,'a',4,'a',1},
-{0,'a',1,'a',1},
-{0,'b',5,'b',1},
-{0,'b',1,'b',1},
-{1,'a',2,'a',1},
-{1,'b',3,'b',1}
+{'0','a','4','a','1'},
+{'0','a','1','a','1'},
+{'0','b','5','b','1'},
+{'0','b','1','b','1'},
+{'1','a','2','a','1'},
+{'1','b','3','b','1'}
 };
 char[][] deltaTape2={
-{0,' ',1,' ',2},
-{1,' ','t',' ',1},
-{2,'a',1,' ',0},
-{3,'b',1,' ',0},
-{4,' ',0,'a',1},
-{5,' ',0,'b',1}
+{'0',' ','1',' ','2'},
+{'1',' ','t',' ','1'},
+{'2','a','1',' ','0'},
+{'3','b','1',' ','0'},
+{'4',' ','0','a','1'},
+{'5',' ','0','b','1'}
 };
-int b=2;
-char[] address={'1','2'};
+char[][][] d={
+ {deltaTape1[1],deltaTape2[0]},
+ {deltaTape1[3],deltaTape2[0]},
+ {deltaTape1[0],null},
+ {deltaTape1[2],null},
+ {deltaTape1[4],null},
+ {deltaTape1[5],null},
+ {null,deltaTape2[1]},
+ {null,deltaTape2[2]},
+ {null,deltaTape2[3]},
+ {null,deltaTape2[4]},
+ {null,deltaTape2[5]},
+};
 
-tm first=new tm(30,al,deltaTape1);
-tm second=new tm(150,al,deltaTape2);
-tm third=new tm(270,address,null);
-tm fourth=new tm(390,address,null);
+int b=d.length;
+machine stroj;
+tm first,second,third,fourth;
 
-tm[] tapes={first,second,third,fourth};
-machine stroj=new machine(tapes);
 
 char[] al2={'0','1','2'};
 char[][] delta2={
@@ -71,9 +80,12 @@ char[][] delta2={
   {4,' ','t',' ',1},
 };
 
-String input="012";
+String input="abba";
+char[] adresa;
+boolean odbijeno;
+boolean gotovo=false;
 
-long time=1000;
+int time=1000;
 int lastTime,lastTimeKod;
 boolean lastPressed=false;
 boolean lastMousePressed=false;
@@ -82,8 +94,28 @@ int l=0;
 int korak=1;
 int state=0;
 char[] tempRead={};
+char[] dio={};
+char[] readT3={};
+char[] empty={};
+char temp;
+boolean help=true;
 
 void setup() {
+char[] address={'X','#'};
+  for(int i=0;i<10;i++){
+    char j=Integer.toString(i).charAt(0);
+    address=append(address,j);
+  }
+  address=append(address,'A');
+  println(address);
+  
+  first=new tm(30,al,deltaTape1);
+  second=new tm(150,al,deltaTape2);
+  third=new tm(270,address,null);
+  fourth=new tm(390,address,null);
+  tm[] tapes={first,second,third,fourth};
+  stroj=new machine(tapes,d);
+  frameRate(1);
   size(640, 640);
   background(200);
   stroj.start();
@@ -93,7 +125,12 @@ void setup() {
 }
 
 void draw() {
-  if ((keyPressed && !lastPressed)|| key==ENTER)
+  stroj.update();
+  
+  if(lastPressed){
+    keyPressed();
+  }
+ /* if ((keyPressed && !lastPressed)|| key==ENTER)
       press();
   lastPressed = keyPressed;
   if (mousePressed){
@@ -102,44 +139,171 @@ void draw() {
   }
   if (lastMousePressed){
     kod();
+  }*/
+}
+
+void keyPressed(){
+  lastPressed=true;
+  if(keyCode==RIGHT){
+    kod();
+  }
+  if(keyCode==LEFT){
+    korak-=2;
+    kod();
   }
 }
 
 void kod(){
-  if(millis()-lastTimeKod<time) return;
-  
   if(korak==1){
     char[] inp=input.toCharArray();
-    stroj.input(inp);
+    stroj.input(inp,first);
   }
-  if(korak==2){
-    if(stroj.state==-1)
-      println("accept");
-    else if(stroj.state==-2)
-      println("reject");
-    else
-      println("nastavljam s radom");
-  }
-  if(korak==3){
-    stroj.write('1',1,fourth);
-  }
-  if(korak==4){
-    char[] adresa=stroj.readAll(fourth);
-    if(adresa==null || l==0){
-        lastTimeKod=millis();
-        return;
+    if(korak==2){
+      if(stroj.state==-1)
+        println("accept");
+      else if(stroj.state==-2)
+        println("reject");
+      else
+        println("nastavljam s radom");
     }
-    String s=new String(adresa);
-    println("adresa=" + s);
-    lastMousePressed=false;
+    if(korak==3){
+     
+      stroj.write('0',1,fourth);
+    
+      //char[] adr={'1','#','2','#','1','1','#'};
+      //stroj.input(adr,third);
+    }
+    if(korak==4){
+      adresa=stroj.readAll(fourth);
+      if(adresa==null || l<fourth.content.length){
+          return;
+      }
+      println("adresa=");
+      println(adresa);
+    }
+  if(korak==5){
+    odbijeno=true;
+    println("odbijeno=" + odbijeno);
   }
-  lastTimeKod=millis();
+  if(korak==6){
+    if (!stroj.returnToStart(fourth)) return;
+    if (!stroj.returnToStart(third)) return;
+  }
+  if(korak==7){
+    int getDio=stroj.getDio(adresa);
+    if (getDio==0){
+      korak++;
+      return;
+    }
+    else{
+      dio=empty;
+      if(gotovo){
+        korak=11;
+      }
+      else{
+        korak+=2;
+      }
+    }
+  }
+  if(korak==8){  
+    if(help){
+      temp=stroj.read(1,third);
+      if(temp==' '){
+        korak++;
+        return;
+      }
+      readT3=append(readT3,temp);
+      println(readT3);
+      if(readT3[readT3.length-1]==dio[readT3.length-1]){
+        help=true;
+        if(java.util.Arrays.equals(dio,readT3)){
+          help=false;
+          temp=stroj.read(1,third);
+          if(temp=='X'){
+            gotovo=true;
+            korak--;
+            return;
+          }
+          else{
+            korak--;
+            println(gotovo);
+          }
+        }
+      }
+      else{
+        help=false;
+      }
+      return;
+    }
+    else{
+        if(temp!='#'){
+          temp=stroj.read(1,third);
+        }
+        else{
+          readT3=empty;
+          help=true;
+          println(readT3);
+        }
+    }
+    korak--;
+  }
+  if(korak==9){
+    println(korak);
+    if (!stroj.returnToStart(fourth)) return;
+  }
+  if(korak==10){
+    temp=stroj.read(1,fourth);
+    if(temp!=' '){
+      int intTemp=temp-'0';
+      println(intTemp);
+      if(stroj.check(intTemp)) stroj.work(intTemp);
+      return;
+    }
+  }
+  if(korak==11){
+    for(int i=0;i<adresa.length;i++)
+      stroj.write(adresa[i],1,third);
+    if(stroj.state=='f')
+      stroj.write('X',1,third);
+    stroj.write('#',1,third);
+  }
+  if(korak==12){
+    if(stroj.state=='t'){
+      println("accept");
+      exit();
+    }
+  }
+  if(korak==13){
+    temp=stroj.read(-1,fourth);
+    if(temp==' ') return;      
+    int intTemp=temp-'0';
+    char charTemp;
+    if(fourth.head!=0) stroj.read(1,fourth);
+    if(intTemp<b){
+      intTemp++;
+      charTemp=Integer.toString(intTemp).charAt(0);
+      stroj.write(charTemp,-1,fourth);
+      println(fourth.content);
+      tempRead=empty;
+      korak=4;
+      return;
+    }
+    else{
+      charTemp=Integer.toString(0).charAt(0);
+      stroj.write(charTemp,-1,fourth);
+      if(fourth.head==0){
+        fourth.goToEnd();
+        stroj.write('0',1,fourth);
+        korak=4;
+        tempRead=empty;
+        return;
+      }
+    }
+  }
+  
+    //lastPressed=false;
   korak++;
-  /*if(millis()-lastTime>time){
-    stroj.write('c',1);
-    lastTime=millis();
-    lastMousePressed=false;
-  }*/
+  return;
 }
 
 void press() {

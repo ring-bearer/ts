@@ -1,9 +1,17 @@
 class machine{
   tm[] tapes;
   int state;
+  char[][][] delta;
   
-  machine(tm[] tapes){
+  machine(tm[] tapes, char[][][] delta){
     this.tapes=tapes;
+    this.delta=delta;
+  }
+  
+  void update(){
+    for(int i=0;i<tapes.length;i++){
+      tapes[i].update();
+    }
   }
   
   void start(){
@@ -13,23 +21,64 @@ class machine{
     }
   }
   
-  void input(char[] s){
-    tapes[0].input(s);
+  boolean returnToStart(tm tape){
+    return tape.returnToStart();
+  }
+  
+  void input(char[] s, tm tape){
+    tape.input(s);
   }
   
   void write(char c, int dir, tm tape){
     tape.write(c,dir);
   }
   
+  char read(int dir, tm tape){
+    return tape.read(dir);
+  }
+  
   char[] readAll(tm tape){
     return tape.readAll();
   }
   
-  int work(){
-    for(int i=0;i<tapes.length;i++){
-      
+  int getDio(char[] adresa){
+    char c=fourth.read(1);
+      dio=append(dio,c);
+      String s=new String(dio);
+      println("dio=" + s);
+    
+    if(java.util.Arrays.equals(dio,adresa)){
+      return 1;
     }
-    return state;
+    else{
+      return 0;
+    }
+  }
+  
+  boolean check(int adr){
+    
+    char[][] confs=delta[adr];
+    for(int i=0;i<confs.length;i++){
+      println(i + " u ");
+      println(confs[i]);
+      if(confs[i]==null) continue;
+      if(!tapes[i].check(confs[i])) return false;
+    }
+    
+    return true;
+  }
+  
+  void work(int adr){
+    
+    char[][] confs=delta[adr];
+    for(int i=0;i<confs.length;i++){
+      if(confs[i]==null) continue;
+      tapes[i].state=confs[i][2];
+      state=confs[i][2];
+      int confs4=confs[i][4]-'0';
+      tapes[i].write(confs[i][3],confs4);
+      println("pis");
+    }
   }
 }
 
@@ -49,30 +98,20 @@ class tm{
     this.delta=delta;
   }
   
-  int worknd(){
-    if(millis()-lastTime<time) return state;
-    if(state==-1 || state==-2) return state;
-    
-    boolean change=false;
-    for(int i=0;i<delta.length;i++){
-      char reading;
-      if(head>=content.length) reading=' ';
-      else reading=content[head];
-      if(delta[i][0]==state && delta[i][1]==reading){
-        if(delta[i][2]=='t') state=-1;
-        else if (delta[i][2]=='f') state=-2;
-        else state=delta[i][2];
-        write(delta[i][3],delta[i][4]);
-        change=true;
-        break;
-      }
+  boolean check(char[] conf){
+    char stateChar=Integer.toString(state).charAt(0);
+    println(stateChar);
+    if(stateChar!=conf[0]){
+      println("vracam");
+      return false;
     }
-    
-    if(!change)
-      state=-2;
-    
-    lastTime=millis();
-    return state;
+    char t=read(1);
+    read(-1);
+    if(t!=conf[1]){
+      return false;
+    }
+    println(t);
+    return true;
   }
   
   int work(){
@@ -148,7 +187,7 @@ class tm{
         if(head<0) head=0;
       }
       
-      update();
+      redraw();
       return r;
     }
     else{
@@ -178,7 +217,7 @@ class tm{
       else
         x=30;
      
-      update();
+      redraw();
       return r;
   }
   
@@ -189,6 +228,7 @@ class tm{
        }
     }
     content[head]=c;
+    println(content[head]);
      /* String s1,s2;
       if(head>len){
         s1=content;
@@ -232,30 +272,40 @@ class tm{
       }
       else
         x=30;
+        
+      println("head je " + head);
             
-      update();
+      redraw();
+  }
+  
+  void goToEnd(){
+    while(head<content.length)
+      read(1);
+  }
+  
+  boolean returnToStart(){
+    read(-1);
+    
+    if(head==0) return true;
+    else return false;
   }
   
   char[] readAll(){
-    char[] r={};
-    if(millis()-lastTime>time){
-        if(l>=content.length){
+     if(l>=content.length){
           key=RIGHT;
           l=0;
-          return r;
+          return tempRead;
         }
-        if(head>0){
-          read(-1);
-          lastTime=millis();
+        if(head>0 && l==0){
+          returnToStart();
         }
         else{
-          char c=read(1);
-          r=append(tempRead,c);
-          lastTime=millis();
-          l++;
-        }
-      }
-     return r;
+              char c=read(1);
+              println(c);
+              tempRead=append(tempRead,c);
+              l++;
+     }
+     return tempRead;
    /* r=read(l);
     if(r=='0') return " ";
     else l++;
@@ -269,5 +319,6 @@ class tm{
     drawTape();
     drawHead(head);
     input(content);
+    return;
   }
 }
