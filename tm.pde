@@ -1,9 +1,9 @@
 class machine{
   tm[] tapes;
   int state;
-  char[][][] delta;
+  String[][][] delta;
   
-  machine(tm[] tapes, char[][][] delta){
+  machine(tm[] tapes, String[][][] delta){
     this.tapes=tapes;
     this.delta=delta;
   }
@@ -21,33 +21,42 @@ class machine{
     }
   }
   
+  boolean returnAllToStart(){
+    for(int i=0;i<tapes.length;i++){
+      if(!tapes[i].returnToStart()) return false;
+    }
+    state=0;
+    return true;
+  }
+  
   boolean returnToStart(tm tape){
     return tape.returnToStart();
   }
   
-  void input(char[] s, tm tape){
+  void input(String[] s, tm tape){
     tape.input(s);
   }
   
-  void write(char c, int dir, tm tape){
+  void write(String c, int dir, tm tape){
     tape.write(c,dir);
   }
   
-  char read(int dir, tm tape){
+  String read(int dir, tm tape){
     return tape.read(dir);
   }
   
-  char[] readAll(tm tape){
+  String[] readAll(tm tape){
     return tape.readAll();
   }
   
-  int getDio(char[] adresa){
-    char c=fourth.read(1);
+  int getDio(String[] adresa){
+    String c=fourth.read(1);
       dio=append(dio,c);
-      String s=new String(dio);
-      println("dio=" + s);
+      println("dio=");
+      println(dio);
     
     if(java.util.Arrays.equals(dio,adresa)){
+      println("dio i adr isti");
       return 1;
     }
     else{
@@ -57,11 +66,11 @@ class machine{
   
   boolean check(int adr){
     
-    char[][] confs=delta[adr];
+    String[][] confs=delta[adr];
     for(int i=0;i<confs.length;i++){
+      if(confs[i]==null) continue;
       println(i + " u ");
       println(confs[i]);
-      if(confs[i]==null) continue;
       if(!tapes[i].check(confs[i])) return false;
     }
     
@@ -70,13 +79,13 @@ class machine{
   
   void work(int adr){
     
-    char[][] confs=delta[adr];
+    String[][] confs=delta[adr];
     for(int i=0;i<confs.length;i++){
       if(confs[i]==null) continue;
-      int confsHelp=confs[i][2]-'0';
+      int confsHelp=Integer.parseInt(confs[i][2]);
       tapes[i].state=confsHelp;
       state=confsHelp;
-      confsHelp=confs[i][4]-'0';
+      confsHelp=Integer.parseInt(confs[i][4]);
       tapes[i].write(confs[i][3],confsHelp);
       println("pis");
     }
@@ -89,32 +98,26 @@ class tm{
   int tilew=50;
   int head=0;
   int state=0;
-  char[] alphabet;
-  char[][] delta;
-  char[] content={};
-  int[] alphabetInt;
-  int[] contentInt={};
+  String[] alphabet;
+  String[][] delta;
+  String[] content={};
   
-  tm(int y, char[] alph, char[][] delta){
+  tm(int y, String[] alph, String[][] delta){
     this.y=y;
     alphabet=alph;
-    for(int i=0;i<alphabet.length;i++){
-      int novi=alphabet[i]+'0';
-      alphabetInt=append(alphabetInt,novi);
-    }
     this.delta=delta;
   }
   
-  boolean check(char[] conf){
-    char stateChar=Integer.toString(state).charAt(0);
-    println(stateChar);
-    if(stateChar!=conf[0]){
+  boolean check(String[] conf){
+    String stateChar=Integer.toString(state);
+    println("statechar je " + stateChar);
+    if(!stateChar.equals(conf[0])){
       println("vracam");
       return false;
     }
-    char t=read(1);
+    String t=read(1);
     read(-1);
-    if(t!=conf[1]){
+    if(!t.equals(conf[1])){
       return false;
     }
     println(t);
@@ -127,14 +130,12 @@ class tm{
     
     boolean change=false;
     for(int i=0;i<delta.length;i++){
-      char reading;
-      if(head>=content.length) reading=' ';
+      String reading;
+      if(head>=content.length) reading=" ";
       else reading=content[head];
-      if(delta[i][0]==state && delta[i][1]==reading){
-        if(delta[i][2]=='t') state=-1;
-        else if (delta[i][2]=='f') state=-2;
-        else state=delta[i][2];
-        write(delta[i][3],delta[i][4]);
+      if(delta[i][0]==Integer.toString(state) && delta[i][1].equals(reading)){
+        state=Integer.parseInt(delta[i][2]);
+        write(delta[i][3],Integer.parseInt(delta[i][4]));
         change=true;
         break;
       }
@@ -171,25 +172,21 @@ class tm{
     input(content);
   }
   
-  void input(char[] s){
+  void input(String[] s){
     content=s;
-    for(int i=0;i<content.length;i++){
-      int novi=content[i]+'0';
-      contentInt=append(contentInt,novi);
-    }
     fill(0);
-    textSize(50);
+    textSize(45);
     textAlign(CENTER);
     for(int i=0;i<s.length;i++){
       text(content[i],x+i*tilew+tilew/2,y+h-10);
     }
   }    
 
-  char readChar(char c, int dir){
-    char r;
-    if(head>=content.length) r=' ';
+  String readChar(String c, int dir){
+    String r;
+    if(head>=content.length) r=" ";
     else r=content[head];
-    if(r==c){
+    if(r.equals(c)){
       if(dir==1){
       head++;
       }
@@ -202,14 +199,15 @@ class tm{
       return r;
     }
     else{
-      return ' ';
+      return " ";
     }
   }
 
-  char read(int dir){
-      char r;
-      if(head>=content.length) r=' ';
+  String read(int dir){
+      String r;
+      if(head>=content.length) r=" ";
       else r=content[head];
+      println("r je " + r);
       
       if(dir==1){
         head++;
@@ -232,97 +230,14 @@ class tm{
       return r;
   }
   
-  void write(char c, int dir){
+  void write(String c, int dir){
     if(head>=content.length){
        for(int i=content.length;i<=head;i++){
-         content=append(content,' ');
+         content=append(content," ");
        }
     }
     content[head]=c;
     println(content[head]);
-     /* String s1,s2;
-      if(head>len){
-        s1=content;
-        for(int i=len;i<head;i++){
-          s1=s1+' ';
-        }
-        s2="";
-      }
-      else{
-        s1=content.substring(0,head);
-        if(head+1<=len)
-          s2=content.substring(head+1);
-        else
-          s2="";
-      }
-      String novi=s1+c+s2;
-      println(novi);
-      for(int i=novi.length();i>=1;){
-        println(i);
-        if(novi.charAt(i-1)==' '){
-          novi=novi.substring(0,i-1);
-          i=novi.length();
-        }
-        else break;
-      }
-      content=novi;
-      */
-      if(dir==1){
-        head++;
-      }
-      else if (dir<=0){
-        head--;
-        if(head<0) head=0;
-      }
-      
-      if(head>10){
-        if(dir==1)
-          x=x-tilew;
-        else if (dir<=0)
-          x=x+tilew;
-      }
-      else
-        x=30;
-        
-      println("head je " + head);
-            
-      redraw();
-  }
-  
-  int readInt(int dir){
-      int r;
-      if(head>=contentInt.length) r=' ';
-      else r=contentInt[head];
-      
-      if(dir==1){
-        head++;
-      }
-      else if (dir<=0){
-        head--;
-        if(head<0) head=0;
-      }
-      
-      if(head>10){
-        if(dir==1)
-          x=x-tilew;
-        else if (dir<=0)
-          x=x+tilew;
-      }
-      else
-        x=30;
-     
-      redraw();
-      return r;
-  }
-  
-  void writeInt(int c, int dir){
-    if(head>=content.length){
-       for(int i=contentInt.length;i<=head;i++){
-         contentInt=append(contentInt,' ');
-       }
-    }
-    contentInt[head]=c;
-    println(contentInt[head]);
      /* String s1,s2;
       if(head>len){
         s1=content;
@@ -380,21 +295,27 @@ class tm{
   boolean returnToStart(){
     read(-1);
     
-    if(head==0) return true;
+    if(head==0){
+      state=0;
+      return true;
+    }
     else return false;
   }
   
-  char[] readAll(){
+  String[] readAll(){
      if(l>=content.length){
           key=RIGHT;
           l=0;
+          println("tempread je ");
+          println(tempRead);
           return tempRead;
         }
         if(head>0 && l==0){
           returnToStart();
+          return null;
         }
         else{
-              char c=read(1);
+              String c=read(1);
               println(c);
               tempRead=append(tempRead,c);
               l++;
@@ -413,7 +334,6 @@ class tm{
     drawTape();
     drawHead(head);
     input(content);
-    contentInt=
     return;
   }
 }

@@ -1,6 +1,9 @@
+//is it checking for each dio is it done
+//also gets stuck at 000??
+
+
 //char none=Character.MIN_VALUE;
 
-char[] al={'a','b'};
 char[][] delta={
 {0,'a',7,'a',2},
 {0,'b',7,'b',2},
@@ -23,43 +26,6 @@ char[][] delta={
 {7,' ','t',' ',1},
 };
 
-
-
-char[][] deltaTape1={
-{'0','a','1','a','1'},
-{'0','b','1','b','1'},
-{'1','a','2','a','1'},
-{'1','b','3','b','1'},
-{'0','a','4','a','1'},
-{'0','b','5','b','1'},
-};
-char[][] deltaTape2={
-{'0',' ','1',' ','2'},
-{'2','a','1',' ','0'},
-{'3','b','1',' ','0'},
-{'1',' ','t',' ','1'},
-{'4',' ','0','a','1'},
-{'5',' ','0','b','1'}
-};
-char[][][] d={
- {deltaTape1[0],deltaTape2[0]},
- {deltaTape1[1],deltaTape2[0]},
- {deltaTape1[2],null},
- {deltaTape1[3],null},
- {null,deltaTape2[1]},
- {null,deltaTape2[2]},
- {null,deltaTape2[3]},
- {deltaTape1[4],null},
- {deltaTape1[5],null},
- {null,deltaTape2[4]},
- {null,deltaTape2[5]},
-};
-
-int b=d.length;
-machine stroj;
-tm first,second,third,fourth;
-
-
 char[] al2={'0','1','2'};
 char[][] delta2={
   {0,'0',1,'A',1},
@@ -80,8 +46,45 @@ char[][] delta2={
   {4,' ','t',' ',1},
 };
 
-String input="abba";
-char[] adresa;
+String[] al={"a","b"};
+String[][] deltaTape1={
+{"0","a","1","a","1"},
+{"0","b","1","b","1"},
+{"1","a","2","a","1"},
+{"1","b","3","b","1"},
+{"0","a","4","a","1"},
+{"0","b","5","b","1"},
+};
+String[][] deltaTape2={
+{"0"," ","1"," ","2"},
+{"2","a","1"," ","0"},
+{"3","b","1"," ","0"},
+{"1"," ","-1"," ","1"},
+{"4"," ","0","a","1"},
+{"5"," ","0","b","1"}
+};
+String[][][] d={
+ {deltaTape1[0],deltaTape2[0]},
+ {deltaTape1[1],deltaTape2[0]},
+ {deltaTape1[2],null},
+ {deltaTape1[3],null},
+ {null,deltaTape2[1]},
+ {null,deltaTape2[2]},
+ {null,deltaTape2[3]},
+ {deltaTape1[4],null},
+ {deltaTape1[5],null},
+ {null,deltaTape2[4]},
+ {null,deltaTape2[5]},
+};
+
+int b=2;
+machine stroj;
+tm first,second,third,fourth;
+
+
+
+String[] input={"a","b","b","a"};
+String[] adresa;
 boolean odbijeno;
 boolean gotovo=false;
 
@@ -89,26 +92,25 @@ int time=1000;
 int lastTime,lastTimeKod;
 boolean lastPressed=false;
 boolean lastMousePressed=false;
-//tm stroj2=new tm(130,al,delta);
 int l=0;
 int korak=1;
 int state=0;
-char[] tempRead={};
-char[] dio={};
-char[] readT3={};
-char[] empty={};
-char temp;
+String[] tempRead={};
+String[] dio={};
+String[] readT3={};
+String[] empty={};
+String temp;
 boolean help=true;
 
 void setup() {
-char[] address={'X','#'};
-  for(int i=0;i<10;i++){
-    char j=Integer.toString(i).charAt(0);
+String[] address={"X","#"};
+  for(int i=0;i<11;i++){
+    String j=Integer.toString(i);
     address=append(address,j);
   }
-  address=append(address,'A');
   println(address);
   
+println(b);
   first=new tm(30,al,deltaTape1);
   second=new tm(150,al,deltaTape2);
   third=new tm(270,address,null);
@@ -128,7 +130,7 @@ void draw() {
   stroj.update();
   
   if(lastPressed){
-    keyPressed();
+    kod();
   }
  /* if ((keyPressed && !lastPressed)|| key==ENTER)
       press();
@@ -143,20 +145,31 @@ void draw() {
 }
 
 void keyPressed(){
-  lastPressed=true;
-  if(keyCode==RIGHT){
+  if(keyCode==ENTER){
+    lastPressed=true;
     kod();
+  }
+  if(keyCode==TAB){
+    lastPressed=false;
   }
   if(keyCode==LEFT){
     korak-=2;
     kod();
   }
+  if(keyCode==RIGHT){
+    kod();
+  }
+  if(key=='a'){
+    time=500;
+  }
+  if(key=='s'){
+    time=1000; 
+  }
 }
 
 void kod(){
   if(korak==1){
-    char[] inp=input.toCharArray();
-    stroj.input(inp,first);
+    stroj.input(input,first);
   }
     if(korak==2){
       if(stroj.state==-1)
@@ -168,30 +181,39 @@ void kod(){
     }
     if(korak==3){
      
-      stroj.write('0',1,fourth);
+      stroj.write("0",1,fourth);
     
       //char[] adr={'1','#','2','#','1','1','#'};
       //stroj.input(adr,third);
     }
     if(korak==4){
       adresa=stroj.readAll(fourth);
-      if(adresa==null || l<fourth.content.length){
-          return;
+      if(l!=0 || adresa==null){
+        return;
       }
       println("adresa=");
       println(adresa);
+      println("l je " + l);
     }
   if(korak==5){
     odbijeno=true;
     println("odbijeno=" + odbijeno);
+    gotovo=false;
   }
   if(korak==6){
-    if (!stroj.returnToStart(fourth)) return;
-    if (!stroj.returnToStart(first)) return;
+    if(!stroj.returnAllToStart()) return;
+    /*if (!stroj.returnToStart(first)) return;
     if (!stroj.returnToStart(second)) return;
-    stroj.state=0;
+    if (!stroj.returnToStart(third)) return;
+    if (!stroj.returnToStart(fourth)) return;*/
   }
   if(korak==7){
+    if(gotovo){
+      third.goToEnd();
+      dio=empty;
+      korak=12;
+      return;
+    }
     int getDio=stroj.getDio(adresa);
     if (getDio==0){
       korak++;
@@ -199,35 +221,39 @@ void kod(){
     }
     else{
       dio=empty;
-      if(gotovo){
-        korak=11;
+      third.goToEnd();
+      /*if(gotovo){
+         korak=12;
       }
-      else{
+      else{*/
         korak+=2;
-      }
+      //}
     }
   }
-  if(korak==8){  
+  if(korak==8){
+    println("help je " + help);
+    temp=stroj.read(1,third);
     if(help){
-      temp=stroj.read(1,third);
-      if(temp==' '){
-        korak++;
+      if(temp==" "){
+        println("temp je nista");
+        stroj.read(-1,third);
+        korak--;
         return;
       }
       readT3=append(readT3,temp);
+      println("readt3 je ");
       println(readT3);
-      if(readT3[readT3.length-1]==dio[readT3.length-1]){
+      if(readT3[readT3.length-1].equals(dio[readT3.length-1])){
         help=true;
         if(java.util.Arrays.equals(dio,readT3)){
           help=false;
           temp=stroj.read(1,third);
-          if(temp=='X'){
+          if(temp=="X"){
             gotovo=true;
             korak--;
             return;
           }
           else{
-            korak--;
             println(gotovo);
           }
         }
@@ -235,77 +261,89 @@ void kod(){
       else{
         help=false;
       }
-      return;
+      //return;
     }
-    else{
-        if(temp!='#'){
-          temp=stroj.read(1,third);
+    if(!help){
+        if(!temp.equals("#")){
+          println("nije #");
         }
         else{
+          println("je #");
           readT3=empty;
           help=true;
-          println(readT3);
         }
     }
     korak--;
   }
   if(korak==9){
-    println(korak);
     if (!stroj.returnToStart(fourth)) return;
   }
   if(korak==10){
     temp=stroj.read(1,fourth);
-    if(temp!=' '){
-      int intTemp=temp-'0';
+    if(!temp.equals(" ")){
+      int intTemp=Integer.parseInt(temp);
       println(intTemp);
       if(stroj.check(intTemp)){ 
         stroj.work(intTemp);
       }
       else{
-        stroj.state='f';
+        stroj.state=-2;
         korak++;
       }
       return;
     }
   }
   if(korak==11){
+    println("adresa je ");
+    println(adresa);
     for(int i=0;i<adresa.length;i++)
       stroj.write(adresa[i],1,third);
-    if(stroj.state=='f')
-      stroj.write('X',1,third);
-    stroj.write('#',1,third);
+    if(stroj.state==-2)
+      stroj.write("X",1,third);
+    stroj.write("#",1,third);
   }
   if(korak==12){
-    if(stroj.state=='t'){
+    if(stroj.state==-1){
       println("accept");
       exit();
     }
   }
   if(korak==13){
-    temp=stroj.read(-1,fourth);
-    if(temp==' ') return;      
-    int intTemp=temp-'0';
-    char charTemp;
-    if(fourth.head!=0) stroj.read(1,fourth);
-    if(intTemp<b){
+    int intTemp;
+    String charTemp;
+    if(fourth.head!=0){
+      temp=stroj.read(-1,fourth);
+      if(temp==" ") return;      
+      intTemp=Integer.parseInt(temp);
+      stroj.read(1,fourth);
+    }
+    else{
+      temp=stroj.read(-1,fourth);
+      if(temp==" ") return;      
+      intTemp=Integer.parseInt(temp);
+    }
+    if(intTemp<b-1){
+      println("manji od b");
       intTemp++;
-      charTemp=Integer.toString(intTemp).charAt(0);
+      charTemp=Integer.toString(intTemp);
       stroj.write(charTemp,-1,fourth);
-      println(fourth.content);
       tempRead=empty;
       korak=4;
       return;
     }
     else{
-      charTemp=Integer.toString(0).charAt(0);
+      println("veci od b");
+      charTemp=Integer.toString(0);
+      println(charTemp);
       stroj.write(charTemp,-1,fourth);
       if(fourth.head==0){
         fourth.goToEnd();
-        stroj.write('0',1,fourth);
+        stroj.write("0",1,fourth);
         korak=4;
         tempRead=empty;
         return;
       }
+      return;
     }
   }
   
