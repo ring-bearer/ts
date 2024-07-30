@@ -1,7 +1,3 @@
-//is it checking for each dio is it done
-//also gets stuck at 000??
-
-
 //char none=Character.MIN_VALUE;
 
 char[][] delta={
@@ -100,7 +96,7 @@ String[] dio={};
 String[] readT3={};
 String[] empty={};
 String temp;
-boolean help=true;
+int help=0;
 
 void setup() {
 String[] address={"X","#"};
@@ -209,7 +205,7 @@ void kod(){
   }
   if(korak==7){
     if(gotovo){
-      third.goToEnd();
+      if (!third.goToEnd()) return;
       dio=empty;
       korak=12;
       return;
@@ -221,7 +217,6 @@ void kod(){
     }
     else{
       dio=empty;
-      third.goToEnd();
       /*if(gotovo){
          korak=12;
       }
@@ -233,7 +228,7 @@ void kod(){
   if(korak==8){
     println("help je " + help);
     temp=stroj.read(1,third);
-    if(help){
+    if(help==0){
       if(temp==" "){
         println("temp je nista");
         stroj.read(-1,third);
@@ -244,13 +239,15 @@ void kod(){
       println("readt3 je ");
       println(readT3);
       if(readT3[readT3.length-1].equals(dio[readT3.length-1])){
-        help=true;
+        //help=1;
         if(java.util.Arrays.equals(dio,readT3)){
-          help=false;
+          help=2;
           temp=stroj.read(1,third);
           if(temp=="X"){
             gotovo=true;
+            readT3=empty;
             korak--;
+            help=0;
             return;
           }
           else{
@@ -259,24 +256,36 @@ void kod(){
         }
       }
       else{
-        help=false;
+        help=1;
       }
       //return;
     }
-    if(!help){
+    if(help==1){
         if(!temp.equals("#")){
           println("nije #");
         }
         else{
           println("je #");
           readT3=empty;
-          help=true;
+          help=0;
+        }
+    }
+    if(help==2){
+        if(!temp.equals("#")){
+          println("nije #");
+        }
+        else{
+          println("je #");
+          readT3=empty;
+          help=0;
+          korak--;
         }
     }
     korak--;
   }
   if(korak==9){
     if (!stroj.returnToStart(fourth)) return;
+    if (!third.goToEnd()) return;
   }
   if(korak==10){
     temp=stroj.read(1,fourth);
@@ -308,6 +317,7 @@ void kod(){
       exit();
     }
   }
+  
   if(korak==13){
     int intTemp;
     String charTemp;
@@ -335,9 +345,12 @@ void kod(){
       println("veci od b");
       charTemp=Integer.toString(0);
       println(charTemp);
-      stroj.write(charTemp,-1,fourth);
-      if(fourth.head==0){
-        fourth.goToEnd();
+      if(fourth.head>=1)
+        stroj.write(charTemp,-1,fourth);
+      else{
+        stroj.write(charTemp,-1,fourth);
+        while (!fourth.goToEnd()){
+        }
         stroj.write("0",1,fourth);
         korak=4;
         tempRead=empty;

@@ -287,19 +287,27 @@ class tm{
       redraw();
   }
   
-  void goToEnd(){
-    while(head<content.length)
-      read(1);
+  boolean goToEnd(){
+    frameRate(2);
+    if(head==content.length){
+      frameRate(1);
+      return true;
+    }
+    read(1);
+    return false;
   }
   
-  boolean returnToStart(){
-    read(-1);
+  boolean returnToStart(){    
+    frameRate(2);
     
     if(head==0){
+      frameRate(1);
       state=0;
       return true;
     }
-    else return false;
+    
+    read(-1);
+    return false;
   }
   
   String[] readAll(){
