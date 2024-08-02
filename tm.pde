@@ -80,14 +80,20 @@ class machine{
   void work(int adr){
     
     String[][] confs=delta[adr];
+    int confsHelp;
     for(int i=0;i<confs.length;i++){
-      if(confs[i]==null) continue;
-      int confsHelp=Integer.parseInt(confs[i][2]);
+      if(confs[i]==null){
+        continue;
+      }
+      confsHelp=Integer.parseInt(confs[i][2]);
       tapes[i].state=confsHelp;
       state=confsHelp;
       confsHelp=Integer.parseInt(confs[i][4]);
       tapes[i].write(confs[i][3],confsHelp);
       println("pis");
+    }
+    for(int i=0;i<confs.length;i++){
+      tapes[i].state=state;
     }
   }
 }
