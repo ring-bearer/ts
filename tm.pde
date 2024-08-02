@@ -37,16 +37,26 @@ class machine{
     tape.input(s);
   }
   
+  void empty(tm tape){
+    tape.content=empty;
+    update();
+  }
+  
   void write(String c, int dir, tm tape){
     tape.write(c,dir);
+    update();
   }
   
   String read(int dir, tm tape){
-    return tape.read(dir);
+    String r=tape.read(dir);
+    update();
+    return r;
   }
   
   String[] readAll(tm tape){
-    return tape.readAll();
+    String r[]=tape.readAll();
+    update();
+    return r;
   }
   
   int getDio(String[] adresa){
@@ -54,6 +64,7 @@ class machine{
       dio=append(dio,c);
       println("dio=");
       println(dio);
+      
     
     if(java.util.Arrays.equals(dio,adresa)){
       println("dio i adr isti");
@@ -131,7 +142,7 @@ class tm{
   }
   
   int work(){
-    if(millis()-lastTime<time) return state;
+    //if(millis()-lastTime<time) return state;
     if(state==-1 || state==-2) return state;
     
     boolean change=false;
@@ -150,7 +161,7 @@ class tm{
     if(!change)
       state=-2;
     
-    lastTime=millis();
+    //lastTime=millis();
     return state;
   }
   
@@ -201,7 +212,7 @@ class tm{
         if(head<0) head=0;
       }
       
-      redraw();
+      update();
       return r;
     }
     else{
@@ -232,7 +243,7 @@ class tm{
       else
         x=30;
      
-      redraw();
+      update();
       return r;
   }
   
@@ -290,24 +301,19 @@ class tm{
         
       println("head je " + head);
             
-      redraw();
+      update();
   }
   
   boolean goToEnd(){
-    frameRate(2);
-    if(head==content.length){
-      frameRate(1);
+    if(head>=content.length){
       return true;
     }
     read(1);
     return false;
   }
   
-  boolean returnToStart(){    
-    frameRate(2);
-    
+  boolean returnToStart(){
     if(head==0){
-      frameRate(1);
       state=0;
       return true;
     }

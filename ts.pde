@@ -1,5 +1,8 @@
 //char none=Character.MIN_VALUE;
 
+//a write f for multiple strs
+//odradi do 0 10 i onda stane
+
 char[][] delta={
 {0,'a',7,'a',2},
 {0,'b',7,'b',2},
@@ -85,10 +88,10 @@ String[] adresa;
 boolean odbijeno;
 boolean gotovo=false;
 
-int time=1000;
-int lastTime,lastTimeKod;
+//int time=1000;
+//int lastTime,lastTimeKod;
 boolean lastPressed=false;
-boolean lastMousePressed=false;
+//boolean lastMousePressed=false;
 int l=0;
 int korak=1;
 int state=0;
@@ -119,8 +122,8 @@ println(b);
   background(200);
   stroj.start();
   //stroj2.start();
-  lastTime=millis();
-  lastTimeKod=millis();
+  //lastTime=millis();
+  //lastTimeKod=millis();
 }
 
 void draw() {
@@ -144,23 +147,26 @@ void draw() {
 void keyPressed(){
   if(keyCode==ENTER){
     lastPressed=true;
-    kod();
   }
   if(keyCode==TAB){
     lastPressed=false;
-  }
-  if(keyCode==LEFT){
-    korak-=2;
-    kod();
-  }
-  if(keyCode==RIGHT){
-    kod();
+    frameRate(1);
   }
   if(key=='a'){
-    time=500;
+    frameRate(frameRate+10);
+    println(frameRate);
   }
   if(key=='s'){
-    time=1000; 
+    frameRate(frameRate-4);
+    println(frameRate);
+  }
+  if(keyCode==RIGHT){
+    lastPressed=false;
+    stroj.read(1,third);
+  }
+  if(keyCode==LEFT){
+    lastPressed=false;
+    stroj.read(-1,third);
   }
 }
 
@@ -177,9 +183,10 @@ void kod(){
         println("nastavljam s radom");
     }
     if(korak==3){
-      String[] inp={"7","9","0","2","4","6"};
+      //String[] inp={"7","9","0","2","4","6"};
+      String[] inp={"0"};
       stroj.input(inp,fourth);
-    
+      while(!stroj.returnAllToStart()){};
       //char[] adr={'1','#','2','#','1','1','#'};
       //stroj.input(adr,third);
     }
@@ -208,7 +215,7 @@ void kod(){
   if(korak==7){
     if(gotovo){
       //if (!third.goToEnd()) return;
-      dio=empty;
+      //dio=empty;
       korak=12;
       println("gotovo! korak je ");
       println(korak);  
@@ -220,7 +227,7 @@ void kod(){
       return;
     }
     else{
-      dio=empty;
+      //dio=empty;
       /*if(gotovo){
          korak=12;
       }
@@ -355,8 +362,23 @@ void kod(){
       println("reject");
       exit();
     }
+   /* while(!fourth.goToEnd()){}
+    println("tu");
+    fourth.read(-1);
+    println("procito");*/
   }
   if(korak==14){
+    println("dio je ");
+    println(dio);
+    fourth.input(dio);
+    fourth.head=fourth.content.length;
+    fourth.update();
+    println("proso");
+    println(fourth.head);
+    sljedeca(dio);
+    dio=empty;
+    return;
+    /*
     int intTemp;
     String charTemp;
     if(fourth.head!=0){
@@ -395,12 +417,50 @@ void kod(){
         return;
       }
       return;
-    }
+    }*/
   }
   
     //lastPressed=false;
   korak++;
   return;
+}
+
+void sljedeca(String[] adresa){
+    int intTemp;
+    int headTemp=1;
+    String charTemp=" ";
+    while(charTemp==" "){
+      headTemp=fourth.head;
+      charTemp=stroj.read(-1,fourth);
+    }
+    intTemp=Integer.parseInt(charTemp);
+    if(headTemp!=0) stroj.read(1,fourth);
+    if(intTemp<b-1){
+      println("manji od b");
+      intTemp++;
+      charTemp=Integer.toString(intTemp);
+      stroj.write(charTemp,-1,fourth);
+      tempRead=empty;
+      korak=4;
+      return;
+    }
+    else{
+      println("veci od b");
+      charTemp=Integer.toString(0);
+      println(charTemp);
+      if(fourth.head>=1)
+        stroj.write(charTemp,-1,fourth);
+      else{
+        stroj.write(charTemp,-1,fourth);
+        while (!fourth.goToEnd()){
+        }
+        stroj.write("0",1,fourth);
+        korak=4;
+        tempRead=empty;
+        return;
+      }
+      return;
+    }
 }
 
 boolean kraj(String[] adresa/*, int mjesto*/){
@@ -474,25 +534,4 @@ int findAddress(String[] adresa){
         help=0;
     }
   }
-}
-
-void press() {
-   /*if (keyCode==RIGHT) {
-    stroj.read(1);
-  }
-  else if (keyCode==LEFT) {
-    stroj.read(-1);
-  }
-  else if(key==ENTER){
-   stroj.readAll();
-  }
-  else if(key==TAB){
-    stroj.start();
-  }
-  else if(key==BACKSPACE){
-    stroj.write(' ',-1);
-  }
-  else{
-    stroj.write(key,1);
-  }*/
 }
