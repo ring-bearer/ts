@@ -21,16 +21,16 @@ class machine{
     }
   }
   
-  boolean returnAllToStart(){
+  void returnAllToStart(){
     for(int i=0;i<tapes.length;i++){
-      if(!tapes[i].returnToStart()) return false;
+      tapes[i].returnToStart();
     }
     state=0;
-    return true;
+    return;
   }
   
-  boolean returnToStart(tm tape){
-    return tape.returnToStart();
+  void returnToStart(tm tape){
+    tape.returnToStart();
   }
   
   void input(String[] s, tm tape){
@@ -61,6 +61,7 @@ class machine{
   
   int getDio(String[] adresa){
     String c=fourth.read(1);
+    if(c.equals(" ")) return 0;
       dio=append(dio,c);
       println("dio=");
       println(dio);
@@ -304,22 +305,19 @@ class tm{
       update();
   }
   
-  boolean goToEnd(){
-    if(head>=content.length){
-      return true;
+  void goToEnd(){
+    while(head<content.length){
+      read(1);
     }
-    read(1);
-    return false;
+    return;
   }
   
-  boolean returnToStart(){
-    if(head==0){
-      state=0;
-      return true;
+  void returnToStart(){
+    while(head!=0){
+      read(-1);
     }
-    
-    read(-1);
-    return false;
+    state=0;
+    return;
   }
   
   String[] readAll(){

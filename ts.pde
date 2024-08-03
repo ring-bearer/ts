@@ -101,6 +101,7 @@ String[] readT3={};
 String[] empty={};
 String temp;
 int help=0;
+int adrLength=1;
 
 void setup() {
 String[] address={"X","#"};
@@ -152,14 +153,6 @@ void keyPressed(){
     lastPressed=false;
     frameRate(1);
   }
-  if(key=='a'){
-    frameRate(frameRate+10);
-    println(frameRate);
-  }
-  if(key=='s'){
-    frameRate(frameRate-4);
-    println(frameRate);
-  }
   if(keyCode==RIGHT){
     lastPressed=false;
     stroj.read(1,third);
@@ -167,6 +160,18 @@ void keyPressed(){
   if(keyCode==LEFT){
     lastPressed=false;
     stroj.read(-1,third);
+  }
+  if(key=='1'){
+    frameRate(1);
+  }
+  if(key=='3'){
+    frameRate(30);
+  }
+  if(key=='5'){
+    frameRate(50);
+  }
+  if(key=='6'){
+    frameRate(60);
   }
 }
 
@@ -186,7 +191,7 @@ void kod(){
       //String[] inp={"7","9","0","2","4","6"};
       String[] inp={"0"};
       stroj.input(inp,fourth);
-      while(!stroj.returnAllToStart()){};
+      stroj.returnAllToStart();
       //char[] adr={'1','#','2','#','1','1','#'};
       //stroj.input(adr,third);
     }
@@ -205,7 +210,7 @@ void kod(){
     gotovo=false;
   }
   if(korak==6){
-    while(!stroj.returnAllToStart()){};
+    stroj.returnAllToStart();
     second.content=empty;
     /*if (!stroj.returnToStart(first)) return;
     if (!stroj.returnToStart(second)) return;
@@ -221,8 +226,12 @@ void kod(){
       println(korak);  
       return;
     }
-    int getDio=stroj.getDio(adresa);
-    if (getDio==0){
+    if(java.util.Arrays.equals(dio,adresa)){
+      korak+=2;
+    }
+    else korak++;
+    stroj.getDio(adresa);
+    /*if (getDio==0){
       korak++;
       return;
     }
@@ -231,13 +240,13 @@ void kod(){
       /*if(gotovo){
          korak=12;
       }
-      else{*/
+      else{
         korak+=2;
       //}
-    }
+    }*/
   }
   if(korak==8){
-    int find=findAddress(adresa);
+    int find=findAddress(dio);
     if(find==2){
       stroj.read(-1,third);
       korak--;
@@ -314,8 +323,8 @@ void kod(){
     korak--;*/
   }
   if(korak==9){
-    while (!stroj.returnToStart(fourth)){};
-    while (!third.goToEnd()){};
+    stroj.returnToStart(fourth);
+    third.goToEnd();
   }
   if(korak==10){
     temp=stroj.read(1,fourth);
@@ -377,6 +386,10 @@ void kod(){
     println(fourth.head);
     sljedeca(dio);
     dio=empty;
+    fourth.goToEnd();
+    for(int i=fourth.head;i<adrLength;i++){
+      fourth.write("0",1);
+    }
     return;
     /*
     int intTemp;
@@ -428,39 +441,41 @@ void kod(){
 void sljedeca(String[] adresa){
     int intTemp;
     int headTemp=1;
-    String charTemp=" ";
-    while(charTemp==" "){
-      headTemp=fourth.head;
-      charTemp=stroj.read(-1,fourth);
-    }
-    intTemp=Integer.parseInt(charTemp);
-    if(headTemp!=0) stroj.read(1,fourth);
-    if(intTemp<b-1){
-      println("manji od b");
-      intTemp++;
-      charTemp=Integer.toString(intTemp);
-      stroj.write(charTemp,-1,fourth);
-      tempRead=empty;
-      korak=4;
-      return;
-    }
-    else{
-      println("veci od b");
-      charTemp=Integer.toString(0);
-      println(charTemp);
-      if(fourth.head>=1)
+    String charTemp;
+    
+    while(true){
+      charTemp=" ";
+      while(charTemp==" "){
+        headTemp=fourth.head;
+        charTemp=stroj.read(-1,fourth);
+      }
+      intTemp=Integer.parseInt(charTemp);
+      if(headTemp!=0) stroj.read(1,fourth);
+      if(intTemp<b-1){
+        println("manji od b");
+        intTemp++;
+        charTemp=Integer.toString(intTemp);
         stroj.write(charTemp,-1,fourth);
-      else{
-        stroj.write(charTemp,-1,fourth);
-        while (!fourth.goToEnd()){
-        }
-        stroj.write("0",1,fourth);
-        korak=4;
         tempRead=empty;
+        korak=4;
         return;
       }
-      return;
-    }
+      else{
+        println("veci od b");
+        charTemp=Integer.toString(0);
+        if(fourth.head>=1)
+          stroj.write(charTemp,-1,fourth);
+        else{
+          stroj.write(charTemp,-1,fourth);
+          fourth.goToEnd();
+          stroj.write("0",1,fourth);
+          korak=4;
+          adrLength++;
+          tempRead=empty;
+          return;
+        }
+      }
+   }
 }
 
 boolean kraj(String[] adresa/*, int mjesto*/){
@@ -469,7 +484,7 @@ boolean kraj(String[] adresa/*, int mjesto*/){
     stroj.read(1,third);
   }*/
   
-  while (!stroj.returnToStart(third)){}
+  stroj.returnToStart(third);
   int find=findAddress(adresa);
   if(find==1) return true;
   if(find==0){
