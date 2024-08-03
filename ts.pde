@@ -1,7 +1,7 @@
 //char none=Character.MIN_VALUE;
 
 //a write f for multiple strs
-//odradi do 0 10 i onda stane
+//myb dont check for reject after every address  
 
 char[][] delta={
 {0,'a',7,'a',2},
@@ -25,7 +25,6 @@ char[][] delta={
 {7,' ','t',' ',1},
 };
 
-char[] al2={'0','1','2'};
 char[][] delta2={
   {0,'0',1,'A',1},
   {0,'B',4,'B',1},
@@ -45,6 +44,28 @@ char[][] delta2={
   {4,' ','t',' ',1},
 };
 
+//rijeci oblika 0^n1^n
+String[] al2={"0","1"};
+String[][] epsilonTape1={
+{"0","0","0","0","1"},
+{"0","0","1","0","1"},
+{"1","1","1","1","1"},
+{"1"," ","-1"," ","1"},
+};
+String[][] epsilonTape2={
+{"0"," ","0","0","1"},
+{"0"," ","1","0","2"},
+{"1","0","1"," ","0"},
+{"1"," ","-1"," ","1"},
+};
+String[][][] e={
+ {epsilonTape1[0],epsilonTape2[0]},
+ {epsilonTape1[1],epsilonTape2[1]},
+ {epsilonTape1[2],epsilonTape2[2]},
+ {epsilonTape1[3],epsilonTape2[3]},
+};
+
+//parni palindromi
 String[] al={"a","b"};
 String[][] deltaTape1={
 {"0","a","1","a","2"},
@@ -77,7 +98,32 @@ String[][][] d={
  {null,deltaTape2[5]},
 };
 
-int b=d.length;
+//neparni palindromi,
+//uz al, deltaTape2
+String[][] zetaTape1={
+{"0","a","1","a","1"},
+{"0","b","1","b","1"},
+{"1","a","2","a","1"},
+{"1","b","3","b","1"},
+{"0","a","4","a","1"},
+{"0","b","5","b","1"},
+{"1"," ","-1"," ","1"},
+};
+String[][][] z={
+ {zetaTape1[0],deltaTape2[0]},
+ {zetaTape1[1],deltaTape2[0]},
+ {zetaTape1[2],null},
+ {zetaTape1[3],null},
+ {null,deltaTape2[1]},
+ {null,deltaTape2[2]},
+ {zetaTape1[6],deltaTape2[3]},
+ {zetaTape1[4],null},
+ {zetaTape1[5],null},
+ {null,deltaTape2[4]},
+ {null,deltaTape2[5]},
+};
+
+int b=z.length;
 machine stroj;
 tm first,second,third,fourth;
 
@@ -105,21 +151,18 @@ int adrLength=1;
 
 void setup() {
 String[] address={"X","#"};
-  for(int i=0;i<11;i++){
+  for(int i=0;i<b;i++){
     String j=Integer.toString(i);
     address=append(address,j);
   }
-  println(address);
-  
-println(b);
-  first=new tm(30,al,deltaTape1);
+  first=new tm(30,al,zetaTape1);
   second=new tm(150,al,deltaTape2);
   third=new tm(270,address,null);
   fourth=new tm(390,address,null);
   tm[] tapes={first,second,third,fourth};
-  stroj=new machine(tapes,d);
-  frameRate(1);
-  size(640, 640);
+  stroj=new machine(tapes,z);
+  //frameRate(1);
+  size(1000, 640);
   background(200);
   stroj.start();
   //stroj2.start();
@@ -212,10 +255,6 @@ void kod(){
   if(korak==6){
     stroj.returnAllToStart();
     second.content=empty;
-    /*if (!stroj.returnToStart(first)) return;
-    if (!stroj.returnToStart(second)) return;
-    if (!stroj.returnToStart(third)) return;
-    if (!stroj.returnToStart(fourth)) return;*/
   }
   if(korak==7){
     if(gotovo){
