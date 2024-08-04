@@ -47,13 +47,13 @@ String[][] epsilonTape1={
 {"0","0","0","0","1"},
 {"0","0","1","0","1"},
 {"1","1","1","1","1"},
-{"1"," ","-1"," ","1"},
+{"1"," ","t"," ","1"},
 };
 String[][] epsilonTape2={
 {"0"," ","0","0","1"},
 {"0"," ","1","0","2"},
 {"1","0","1"," ","0"},
-{"1"," ","-1"," ","1"},
+{"1"," ","t"," ","1"},
 };
 String[][][] e={
  {epsilonTape1[0],epsilonTape2[0]},
@@ -71,13 +71,13 @@ String[][] deltaTape1={
 {"1","b","3","b","1"},
 {"0","a","4","a","1"},
 {"0","b","5","b","1"},
-{"1"," ","-1"," ","1"},
+{"1"," ","t"," ","1"},
 };
 String[][] deltaTape2={
 {"0"," ","1"," ","0"},
 {"2","a","1"," ","0"},
 {"3","b","1"," ","0"},
-{"1"," ","-1"," ","1"},
+{"1"," ","t"," ","1"},
 {"4"," ","0","a","1"},
 {"5"," ","0","b","1"}
 };
@@ -104,7 +104,7 @@ String[][] zetaTape1={
 {"1","b","3","b","1"},
 {"0","a","4","a","1"},
 {"0","b","5","b","1"},
-{"1"," ","-1"," ","1"},
+{"1"," ","t"," ","1"},
 };
 String[][][] z={
  {zetaTape1[0],deltaTape2[0]},
@@ -122,7 +122,7 @@ String[][][] z={
 
 int b=z.length;
 machine stroj;
-tm first,second,third,fourth;
+tape first,second,third,fourth;
 
 
 
@@ -131,19 +131,13 @@ String[] adresa;
 boolean odbijeno;
 boolean gotovo=false;
 
-//int time=1000;
-//int lastTime,lastTimeKod;
 boolean lastPressed=false;
-//boolean lastMousePressed=false;
 int l=0;
 int korak=1;
-int state=0;
 String[] tempRead={};
 String[] dio={};
 String[] readT3={};
 String[] empty={};
-String temp;
-int help=0;
 int adrLength=1;
 
 void setup() {
@@ -152,19 +146,15 @@ String[] address={"X","#"};
     String j=Integer.toString(i);
     address=append(address,j);
   }
-  first=new tm(30,al,zetaTape1);
-  second=new tm(150,al,deltaTape2);
-  third=new tm(270,address,null);
-  fourth=new tm(390,address,null);
-  tm[] tapes={first,second,third,fourth};
+  first=new tape(30,al,zetaTape1);
+  second=new tape(150,al,deltaTape2);
+  third=new tape(270,address,null);
+  fourth=new tape(390,address,null);
+  tape[] tapes={first,second,third,fourth};
   stroj=new machine(tapes,z);
-  //frameRate(1);
   size(1000, 640);
   background(200);
   stroj.start();
-  //stroj2.start();
-  //lastTime=millis();
-  //lastTimeKod=millis();
 }
 
 void draw() {
@@ -173,16 +163,6 @@ void draw() {
   if(lastPressed){
     kod();
   }
- /* if ((keyPressed && !lastPressed)|| key==ENTER)
-      press();
-  lastPressed = keyPressed;
-  if (mousePressed){
-    mousePressed=false;
-    lastMousePressed=true;
-  }
-  if (lastMousePressed){
-    kod();
-  }*/
 }
 
 void keyPressed(){
@@ -217,13 +197,12 @@ void keyPressed(){
 
 void kod(){
   if(korak==1){
-    //stroj.input(input,first);
     stroj.writeAll(input,1,first);
   }
     if(korak==2){
-      if(stroj.state==-1)
+      if(stroj.state=="t")
         println("accept");
-      else if(stroj.state==-2)
+      else if(stroj.state=="f")
         println("reject");
       else
         println("nastavljam s radom");
@@ -233,8 +212,6 @@ void kod(){
       String[] inp={"0"};
       stroj.writeAll(inp,1,fourth);
       stroj.returnAllToStart();
-      //char[] adr={'1','#','2','#','1','1','#'};
-      //stroj.input(adr,third);
     }
     if(korak==4){
       adresa=stroj.readAll(fourth);
@@ -256,31 +233,14 @@ void kod(){
   }
   if(korak==7){
     if(gotovo){
-      //if (!third.goToEnd()) return;
-      //dio=empty;
       korak=12;
-      println("gotovo! korak je ");
-      println(korak);  
       return;
     }
     if(java.util.Arrays.equals(dio,adresa)){
       korak+=2;
     }
     else korak++;
-    stroj.getDio(adresa);
-    /*if (getDio==0){
-      korak++;
-      return;
-    }
-    else{
-      //dio=empty;
-      /*if(gotovo){
-         korak=12;
-      }
-      else{
-        korak+=2;
-      //}
-    }*/
+    stroj.getDio();
   }
   if(korak==8){
     int find=findAddress(dio);
@@ -300,71 +260,13 @@ void kod(){
       korak--;
     }
     korak--;
-    
-    /*
-    println("help je " + help);
-    temp=stroj.read(1,third);
-    if(help==0){
-      if(temp==" "){
-        println("temp je nista");
-        stroj.read(-1,third);
-        korak--;
-        return;
-      }
-      readT3=append(readT3,temp);
-      println("readt3 je ");
-      println(readT3);
-      if(readT3[readT3.length-1].equals(dio[readT3.length-1])){
-        //help=1;
-        if(java.util.Arrays.equals(dio,readT3)){
-          help=2;
-          temp=stroj.read(1,third);
-          if(temp=="X"){
-            gotovo=true;
-            readT3=empty;
-            korak--;
-            help=0;
-            return;
-          }
-          else{
-            println(gotovo);
-          }
-        }
-      }
-      else{
-        help=1;
-      }
-      //return;
-    }
-    if(help==1){
-        if(!temp.equals("#")){
-          println("nije #");
-        }
-        else{
-          println("je #");
-          readT3=empty;
-          help=0;
-        }
-    }
-    if(help==2){
-        if(!temp.equals("#")){
-          println("nije #");
-        }
-        else{
-          println("je #");
-          readT3=empty;
-          help=0;
-          korak--;
-        }
-    }
-    korak--;*/
   }
   if(korak==9){
     stroj.returnToStart(fourth);
     third.goToEnd();
   }
   if(korak==10){
-    temp=stroj.read(1,fourth);
+    String temp=stroj.read(1,fourth);
     if(!temp.equals(" ")){
       int intTemp=Integer.parseInt(temp);
       println(intTemp);
@@ -372,32 +274,26 @@ void kod(){
         stroj.work(intTemp);
       }
       else{
-        stroj.state=-2;
+        stroj.state="f";
         korak++;
       }
       return;
     }
   }
   if(korak==11){
-    println("adresa je ");
-    println(adresa);
     for(int i=0;i<adresa.length;i++)
       stroj.write(adresa[i],1,third);
-    if(stroj.state==-2)
+    if(stroj.state=="f")
       stroj.write("X",1,third);
     stroj.write("#",1,third);
   }
   if(korak==12){
-    if(stroj.state==-1){
+    if(stroj.state=="t"){
       println("accept");
       exit();
     }
-    
-      //if (!stroj.returnToStart(third)) return;
   }
   if(korak==13){
-    println("dio je ");
-    println(dio);
     stroj.returnToStart(fourth);
     stroj.writeAll(dio,1,fourth);
     int tempAdrLength=adrLength;
@@ -411,70 +307,27 @@ void kod(){
       korak=4;
       return;
     }
-    /*
-    int intTemp;
-    String charTemp;
-    if(fourth.head!=0){
-      temp=stroj.read(-1,fourth);
-      if(temp==" ") return;      
-      intTemp=Integer.parseInt(temp);
-      stroj.read(1,fourth);
-    }
-    else{
-      temp=stroj.read(-1,fourth);
-      if(temp==" ") return;      
-      intTemp=Integer.parseInt(temp);
-    }
-    if(intTemp<b-1){
-      println("manji od b");
-      intTemp++;
-      charTemp=Integer.toString(intTemp);
-      stroj.write(charTemp,-1,fourth);
-      tempRead=empty;
-      korak=4;
-      return;
-    }
-    else{
-      println("veci od b");
-      charTemp=Integer.toString(0);
-      println(charTemp);
-      if(fourth.head>=1)
-        stroj.write(charTemp,-1,fourth);
-      else{
-        stroj.write(charTemp,-1,fourth);
-        while (!fourth.goToEnd()){
-        }
-        stroj.write("0",1,fourth);
-        korak=4;
-        tempRead=empty;
-        return;
-      }
-      return;
-    }*/
   }
   if(korak==14){
-    for(int i=0;i<b;i++){
-      String charI=Integer.toString(i);
+    if(l==b){
+      korak=4;
+      l=0;
+      return;
+    }
+      String charI=Integer.toString(l);
       String[] chars={charI};
       if(!kraj(chars)){
         odbijeno=false;
-        break;
       }
-    }
+      l++;
     if(odbijeno){
       println("reject");
       exit();
     }
-    else{
-      korak=4;
+    
+    
       return;
-    }
-   /* while(!fourth.goToEnd()){}
-    println("tu");
-    fourth.read(-1);
-    println("procito");*/
   }
-    //lastPressed=false;
   korak++;
   return;
 }
@@ -493,16 +346,12 @@ void sljedeca(String[] adresa){
       intTemp=Integer.parseInt(charTemp);
       if(headTemp!=0) stroj.read(1,fourth);
       if(intTemp<b-1){
-        println("manji od b");
         intTemp++;
         charTemp=Integer.toString(intTemp);
         stroj.write(charTemp,-1,fourth);
-        tempRead=empty;
-        //korak=4;
         return;
       }
       else{
-        println("veci od b");
         charTemp=Integer.toString(0);
         if(fourth.head>=1)
           stroj.write(charTemp,-1,fourth);
@@ -510,9 +359,7 @@ void sljedeca(String[] adresa){
           stroj.write(charTemp,-1,fourth);
           fourth.goToEnd();
           stroj.write("0",1,fourth);
-          //korak=4;
           adrLength++;
-          tempRead=empty;
           return;
         }
       }
@@ -549,7 +396,7 @@ int findAddress(String[] adresa){
   int help=0;
   println("help je " + help);
   while(true){
-    temp=stroj.read(1,third);
+    String temp=stroj.read(1,third);
     if(help==0){
       if(temp==" "){
         println("temp je nista");
