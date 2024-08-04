@@ -1,8 +1,5 @@
 //char none=Character.MIN_VALUE;
 
-//a write f for multiple strs
-//myb dont check for reject after every address  
-
 char[][] delta={
 {0,'a',7,'a',2},
 {0,'b',7,'b',2},
@@ -99,7 +96,7 @@ String[][][] d={
 };
 
 //neparni palindromi,
-//uz al, deltaTape2
+//uz al i deltaTape2
 String[][] zetaTape1={
 {"0","a","1","a","1"},
 {"0","b","1","b","1"},
@@ -220,7 +217,8 @@ void keyPressed(){
 
 void kod(){
   if(korak==1){
-    stroj.input(input,first);
+    //stroj.input(input,first);
+    stroj.writeAll(input,1,first);
   }
     if(korak==2){
       if(stroj.state==-1)
@@ -233,7 +231,7 @@ void kod(){
     if(korak==3){
       //String[] inp={"7","9","0","2","4","6"};
       String[] inp={"0"};
-      stroj.input(inp,fourth);
+      stroj.writeAll(inp,1,fourth);
       stroj.returnAllToStart();
       //char[] adr={'1','#','2','#','1','1','#'};
       //stroj.input(adr,third);
@@ -398,38 +396,21 @@ void kod(){
       //if (!stroj.returnToStart(third)) return;
   }
   if(korak==13){
-    for(int i=0;i<b;i++){
-      String charI=Integer.toString(i);
-      String[] chars={charI};
-      if(!kraj(chars)){
-        odbijeno=false;
-        break;
-      }
-    }
-    if(odbijeno){
-      println("reject");
-      exit();
-    }
-   /* while(!fourth.goToEnd()){}
-    println("tu");
-    fourth.read(-1);
-    println("procito");*/
-  }
-  if(korak==14){
     println("dio je ");
     println(dio);
-    fourth.input(dio);
-    fourth.head=fourth.content.length;
-    fourth.update();
-    println("proso");
-    println(fourth.head);
+    stroj.returnToStart(fourth);
+    stroj.writeAll(dio,1,fourth);
+    int tempAdrLength=adrLength;
     sljedeca(dio);
     dio=empty;
-    fourth.goToEnd();
+    stroj.goToEnd(fourth);
     for(int i=fourth.head;i<adrLength;i++){
-      fourth.write("0",1);
+      stroj.write("0",1,fourth);
     }
-    return;
+    if(tempAdrLength==adrLength){
+      korak=4;
+      return;
+    }
     /*
     int intTemp;
     String charTemp;
@@ -471,7 +452,28 @@ void kod(){
       return;
     }*/
   }
-  
+  if(korak==14){
+    for(int i=0;i<b;i++){
+      String charI=Integer.toString(i);
+      String[] chars={charI};
+      if(!kraj(chars)){
+        odbijeno=false;
+        break;
+      }
+    }
+    if(odbijeno){
+      println("reject");
+      exit();
+    }
+    else{
+      korak=4;
+      return;
+    }
+   /* while(!fourth.goToEnd()){}
+    println("tu");
+    fourth.read(-1);
+    println("procito");*/
+  }
     //lastPressed=false;
   korak++;
   return;
@@ -496,7 +498,7 @@ void sljedeca(String[] adresa){
         charTemp=Integer.toString(intTemp);
         stroj.write(charTemp,-1,fourth);
         tempRead=empty;
-        korak=4;
+        //korak=4;
         return;
       }
       else{
@@ -508,7 +510,7 @@ void sljedeca(String[] adresa){
           stroj.write(charTemp,-1,fourth);
           fourth.goToEnd();
           stroj.write("0",1,fourth);
-          korak=4;
+          //korak=4;
           adrLength++;
           tempRead=empty;
           return;

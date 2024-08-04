@@ -33,6 +33,10 @@ class machine{
     tape.returnToStart();
   }
   
+  void goToEnd(tm tape){
+    tape.goToEnd();
+  }
+  
   void input(String[] s, tm tape){
     tape.input(s);
   }
@@ -44,6 +48,11 @@ class machine{
   
   void write(String c, int dir, tm tape){
     tape.write(c,dir);
+    update();
+  }
+  
+  void writeAll(String c[], int dir, tm tape){
+    tape.writeAll(c,dir);
     update();
   }
   
@@ -199,6 +208,10 @@ class tm{
       text(content[i],x+i*tilew+tilew/2,y+h-10);
     }
   }    
+  
+  int length(){
+    return content.length;
+  }
 
   String readChar(String c, int dir){
     String r;
@@ -256,33 +269,7 @@ class tm{
     }
     content[head]=c;
     println(content[head]);
-     /* String s1,s2;
-      if(head>len){
-        s1=content;
-        for(int i=len;i<head;i++){
-          s1=s1+' ';
-        }
-        s2="";
-      }
-      else{
-        s1=content.substring(0,head);
-        if(head+1<=len)
-          s2=content.substring(head+1);
-        else
-          s2="";
-      }
-      String novi=s1+c+s2;
-      println(novi);
-      for(int i=novi.length();i>=1;){
-        println(i);
-        if(novi.charAt(i-1)==' '){
-          novi=novi.substring(0,i-1);
-          i=novi.length();
-        }
-        else break;
-      }
-      content=novi;
-      */
+    
       if(dir==1){
         head++;
       }
@@ -303,6 +290,17 @@ class tm{
       println("head je " + head);
             
       update();
+  }
+  
+  void writeAll(String[] str, int dir){
+    empty();
+    for(int i=0;i<str.length;i++){
+      write(str[i],dir);
+    }
+  }
+  
+  void empty(){
+    content=empty;
   }
   
   void goToEnd(){
