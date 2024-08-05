@@ -1,5 +1,91 @@
-//char none=Character.MIN_VALUE;
+//prvi primjer: parni palindromi
+//simulacija rada NTO je na prve dvije trake,
+//s tim da se prva traka samo cita
+//(ne mijenjamo ulaznu rijec)
+String[] al={"a","b"};
+//fja prijelaza za prvu traku
+String[][] deltaTape1={
+{"0","a","1","a","2"},
+{"0","b","1","b","2"},
+{"1","a","2","a","1"},
+{"1","b","3","b","1"},
+{"0","a","4","a","1"},
+{"0","b","5","b","1"},
+{"1"," ","t"," ","1"},
+};
+//za drugu traku
+String[][] deltaTape2={
+{"0"," ","1"," ","0"},
+{"2","a","1"," ","0"},
+{"3","b","1"," ","0"},
+{"1"," ","t"," ","1"},
+{"4"," ","0","a","1"},
+{"5"," ","0","b","1"}
+};
+//za cijeli NTO
+String[][][] d={
+ {deltaTape1[0],deltaTape2[0]},
+ {deltaTape1[1],deltaTape2[0]},
+ {deltaTape1[2],null},
+ {deltaTape1[3],null},
+ {null,deltaTape2[1]},
+ {null,deltaTape2[2]},
+ {deltaTape1[6],deltaTape2[3]},
+ {deltaTape1[4],null},
+ {deltaTape1[5],null},
+ {null,deltaTape2[4]},
+ {null,deltaTape2[5]},
+};
 
+//drugi primjer: neparni palindromi,
+//uz al i deltaTape2
+String[][] zetaTape1={
+{"0","a","1","a","1"},
+{"0","b","1","b","1"},
+{"1","a","2","a","1"},
+{"1","b","3","b","1"},
+{"0","a","4","a","1"},
+{"0","b","5","b","1"},
+{"1"," ","t"," ","1"},
+};
+String[][][] z={
+ {zetaTape1[0],deltaTape2[0]},
+ {zetaTape1[1],deltaTape2[0]},
+ {zetaTape1[2],null},
+ {zetaTape1[3],null},
+ {null,deltaTape2[1]},
+ {null,deltaTape2[2]},
+ {zetaTape1[6],deltaTape2[3]},
+ {zetaTape1[4],null},
+ {zetaTape1[5],null},
+ {null,deltaTape2[4]},
+ {null,deltaTape2[5]},
+};
+
+
+//treci primjer: rijeci oblika 0^n1^n
+String[] al2={"0","1"};
+String[][] epsilonTape1={
+{"0","0","0","0","1"},
+{"0","0","1","0","1"},
+{"1","1","1","1","1"},
+{"1"," ","t"," ","1"},
+};
+String[][] epsilonTape2={
+{"0"," ","0","0","1"},
+{"0"," ","1","0","2"},
+{"1","0","1"," ","0"},
+{"1"," ","t"," ","1"},
+};
+String[][][] e={
+ {epsilonTape1[0],epsilonTape2[0]},
+ {epsilonTape1[1],epsilonTape2[1]},
+ {epsilonTape1[2],epsilonTape2[2]},
+ {epsilonTape1[3],epsilonTape2[3]},
+};
+
+
+/*
 char[][] delta={
 {0,'a',7,'a',2},
 {0,'b',7,'b',2},
@@ -40,147 +126,99 @@ char[][] delta2={
   {4,'C',4,'C',1},
   {4,' ','t',' ',1},
 };
+*/
 
-//rijeci oblika 0^n1^n
-String[] al2={"0","1"};
-String[][] epsilonTape1={
-{"0","0","0","0","1"},
-{"0","0","1","0","1"},
-{"1","1","1","1","1"},
-{"1"," ","t"," ","1"},
-};
-String[][] epsilonTape2={
-{"0"," ","0","0","1"},
-{"0"," ","1","0","2"},
-{"1","0","1"," ","0"},
-{"1"," ","t"," ","1"},
-};
-String[][][] e={
- {epsilonTape1[0],epsilonTape2[0]},
- {epsilonTape1[1],epsilonTape2[1]},
- {epsilonTape1[2],epsilonTape2[2]},
- {epsilonTape1[3],epsilonTape2[3]},
-};
+//pomocne varijable
 
-//parni palindromi
-String[] al={"a","b"};
-String[][] deltaTape1={
-{"0","a","1","a","2"},
-{"0","b","1","b","2"},
-{"1","a","2","a","1"},
-{"1","b","3","b","1"},
-{"0","a","4","a","1"},
-{"0","b","5","b","1"},
-{"1"," ","t"," ","1"},
-};
-String[][] deltaTape2={
-{"0"," ","1"," ","0"},
-{"2","a","1"," ","0"},
-{"3","b","1"," ","0"},
-{"1"," ","t"," ","1"},
-{"4"," ","0","a","1"},
-{"5"," ","0","b","1"}
-};
-String[][][] d={
- {deltaTape1[0],deltaTape2[0]},
- {deltaTape1[1],deltaTape2[0]},
- {deltaTape1[2],null},
- {deltaTape1[3],null},
- {null,deltaTape2[1]},
- {null,deltaTape2[2]},
- {deltaTape1[6],deltaTape2[3]},
- {deltaTape1[4],null},
- {deltaTape1[5],null},
- {null,deltaTape2[4]},
- {null,deltaTape2[5]},
-};
+boolean lastPressed=false;
+//prati jesmo li pokrenuli/pauzirali racunanje
+int korak=1;
+//prati tijek programa
+int l=0;
+//pomoc u koraku 14
 
-//neparni palindromi,
-//uz al i deltaTape2
-String[][] zetaTape1={
-{"0","a","1","a","1"},
-{"0","b","1","b","1"},
-{"1","a","2","a","1"},
-{"1","b","3","b","1"},
-{"0","a","4","a","1"},
-{"0","b","5","b","1"},
-{"1"," ","t"," ","1"},
-};
-String[][][] z={
- {zetaTape1[0],deltaTape2[0]},
- {zetaTape1[1],deltaTape2[0]},
- {zetaTape1[2],null},
- {zetaTape1[3],null},
- {null,deltaTape2[1]},
- {null,deltaTape2[2]},
- {zetaTape1[6],deltaTape2[3]},
- {zetaTape1[4],null},
- {zetaTape1[5],null},
- {null,deltaTape2[4]},
- {null,deltaTape2[5]},
-};
+String[] adresa;
+//tu spremamo trenutnu adresu sa 4. trake
+boolean odbijeno;
+//prati jesu li sve grane odbijene
+boolean gotovo;
+//prati je li trenutna grana odbijena
+String[] dio={};
+//pocetni dio trenutne adrese s kojim radimo
+String[] readT3={};
+//pomoc pri citanju adresa s 3. trake
+String[] empty={};
+//uvijek samo prazan niz stringova
+int adrLength=1;
+//duljina trenutne adrese na 4. traci
 
-int b=z.length;
+
+//sljedece varijable promjeniti
+//ovisno o zeljenom primjeru
+
+//broj mogucih prijelaza
+int b=z.length; //ili d.length, e.length
+//ulazna rijec
+String[] input={"a","a"};
+//TS i njegove trake
+//mijenjati dolje u setupu
 machine stroj;
 tape first,second,third,fourth;
 
 
-
-String[] input={"a","a"};
-String[] adresa;
-boolean odbijeno;
-boolean gotovo=false;
-
-boolean lastPressed=false;
-int l=0;
-int korak=1;
-String[] tempRead={};
-String[] dio={};
-String[] readT3={};
-String[] empty={};
-int adrLength=1;
-
 void setup() {
-String[] address={"X","#"};
+  //za pracenje adresa na 3. i 4. traci
+  String[] address={"X","#"};
   for(int i=0;i<b;i++){
     String j=Integer.toString(i);
     address=append(address,j);
   }
+  
+  //inicijalizacija traka
+  //prve dvije promjeniti ovisno o primjeru
+  //umjesto al staviti al2,
+  //umjesto zetaTape1, deltaTape1 ili epsilonTape1
+  //umjesto deltaTape2, epsilonTape2
   first=new tape(30,al,zetaTape1);
   second=new tape(150,al,deltaTape2);
+  
+  //ove trake ostaju iste
   third=new tape(270,address,null);
   fourth=new tape(390,address,null);
   tape[] tapes={first,second,third,fourth};
-  stroj=new machine(tapes,z);
+  stroj=new machine(tapes,z); 
+  //ili d, e umjesto z
+  
+  //crtanje pocetne pozicije TS
+  stroj.start();
+  
+  //izgled ekrana
   size(1000, 640);
   background(200);
-  stroj.start();
 }
 
 void draw() {
+  //iznova crta stroj
   stroj.update();
   
   if(lastPressed){
-    kod();
+    kod(); //program iz dokaza
   }
 }
 
+//fja koja se poziva kod pritiska tipke
 void keyPressed(){
   if(keyCode==ENTER){
     lastPressed=true;
+    //pokretanje programa u kod()
   }
   if(keyCode==TAB){
     lastPressed=false;
-    frameRate(1);
+    //pauziranje programa
   }
-  if(keyCode==RIGHT){
-    lastPressed=false;
-    stroj.read(1,third);
-  }
-  if(keyCode==LEFT){
-    lastPressed=false;
-    stroj.read(-1,third);
-  }
+  //promjena brzine programa
+  //frameRate=broj slika po sekundi
+  //defaultni je 60
   if(key=='1'){
     frameRate(1);
   }
@@ -192,6 +230,16 @@ void keyPressed(){
   }
   if(key=='6'){
     frameRate(60);
+  }
+  //micanje po trecoj traci
+  //program se pritom pauzira
+  if(keyCode==RIGHT){
+    lastPressed=false;
+    stroj.read(1,third);
+  }
+  if(keyCode==LEFT){
+    lastPressed=false;
+    stroj.read(-1,third);
   }
 }
 
@@ -215,9 +263,6 @@ void kod(){
     }
     if(korak==4){
       adresa=stroj.readAll(fourth);
-      if(l!=0 || adresa==null){
-        return;
-      }
       println("adresa=");
       println(adresa);
       println("l je " + l);
@@ -250,13 +295,11 @@ void kod(){
       return;
     }
     else if(find==1){
-      println("find je 1");
       gotovo=true;
       korak--;
       return;
     }
     else{
-      println(gotovo);
       korak--;
     }
     korak--;
@@ -332,6 +375,8 @@ void kod(){
   return;
 }
 
+//racuna adresu poslije zadane
+//i zapisuje ju na 4. traku
 void sljedeca(String[] adresa){
     int intTemp;
     int headTemp=1;
@@ -342,19 +387,31 @@ void sljedeca(String[] adresa){
       while(charTemp==" "){
         headTemp=fourth.head;
         charTemp=stroj.read(-1,fourth);
+        //citamo prvi neprazni znak zdesna
       }
       intTemp=Integer.parseInt(charTemp);
       if(headTemp!=0) stroj.read(1,fourth);
+      //ako nismo prije citanja bili na pocetku,
+      //micemo se udesno
+      //sad smo na istom mjestu kao prije citanja
+      
+      //ako je procitani znak manji od b-1,
+      //samo ga povecamo za 1 i vracamo
       if(intTemp<b-1){
         intTemp++;
         charTemp=Integer.toString(intTemp);
         stroj.write(charTemp,-1,fourth);
         return;
       }
+      //inace mijenjamo znak u 0
       else{
         charTemp=Integer.toString(0);
         if(fourth.head>=1)
           stroj.write(charTemp,-1,fourth);
+        //ako smo na pocetku trake,
+        //sve znakove smo promjenili u 0,
+        //pa treba jos dodati 0 na kraj
+        //npr 999 -> 0000 za b=10
         else{
           stroj.write(charTemp,-1,fourth);
           fourth.goToEnd();
@@ -366,23 +423,17 @@ void sljedeca(String[] adresa){
    }
 }
 
-boolean kraj(String[] adresa/*, int mjesto*/){
+boolean kraj(String[] adresa){
   boolean gotovo1=false;
-  /*for(int i=0;i<mjesto;i++){
-    stroj.read(1,third);
-  }*/
   
   stroj.returnToStart(third);
   int find=findAddress(adresa);
   if(find==1) return true;
   if(find==0){
-    println("tu sam");
-    //int novoMjesto=third.head;
     for(int i=0;i<b;i++){
       String charI=Integer.toString(i);
       String[] novaAdresa=append(adresa,charI);
-      println(novaAdresa);
-      gotovo1=kraj(novaAdresa/*,novoMjesto*/);
+      gotovo1=kraj(novaAdresa);
       if(gotovo1==false){
         println("FALSE");
         break;
@@ -392,47 +443,55 @@ boolean kraj(String[] adresa/*, int mjesto*/){
   return gotovo1;
 }
 
+//trazi danu adresu na trecoj traci
+//vraca 2 ako ju ne nađe,
+//1 ako ju nađe i vec je odbijena,
+//0 ako ju nađe i nije odbijena
 int findAddress(String[] adresa){
   int help=0;
-  println("help je " + help);
   while(true){
     String temp=stroj.read(1,third);
     if(help==0){
       if(temp==" "){
-        println("temp je nista");
+        //cim smo dosli do praznog znaka,
+        //znaci da smo na kraju trake
+        //bez da smo nasli adresu
         return 2;
       }
-      readT3=append(readT3,temp);
-      println("readt3 je ");
-      println(readT3);
+      readT3=append(readT3,temp); //pamtimo dosad procitano
+      
+      //procitano je zasad jednako pocetku adrese
       if(readT3[readT3.length-1].equals(adresa[readT3.length-1])){
+        
         if(java.util.Arrays.equals(adresa,readT3)){
+          //nasli smo trazenu adresu
           temp=stroj.read(1,third);
           readT3=empty;
-          println("idek");
           if(temp=="X"){
-            return 1;
+            return 1; //odbijena adresa
           }
           else{
-            println("vracam 0");
-            return 0;
+            return 0; //nije jos odbijena
           }
         }
       }
+      //odbijen je vec neki cvor predak nase adrese
       else if(readT3[readT3.length-1].equals("X")){
         readT3=empty;
         return 1;
       }
+      
+      //procitano nije jednako pocetku nase adrese
+      //odlazimo do sljedece adrese na traci
       else{
         help=1;
       }
     }
     if(help==1){
+        //pomak do prvog # nakon kojeg je iduca adresa
         while(!temp.equals("#")){
-          println("nije #");    
           temp=stroj.read(1,third);
         }
-        println("je #");
         readT3=empty;
         help=0;
     }
