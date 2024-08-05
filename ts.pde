@@ -2,6 +2,8 @@
 //simulacija rada NTO je na prve dvije trake,
 //s tim da se prva traka samo cita
 //(ne mijenjamo ulaznu rijec)
+
+//abeceda
 String[] al={"a","b"};
 //fja prijelaza za prvu traku
 String[][] deltaTape1={
@@ -243,80 +245,97 @@ void keyPressed(){
   }
 }
 
+//program koji prati pseudokod u seminaru
+//varijabla korak sluzi kako bi se promjene
+//traka u kodu postupno crtale na ekran,
+//umjesto sve odjednom/prebrzo
 void kod(){
   if(korak==1){
+    //ulazna rijec na prvu traku
     stroj.writeAll(input,1,first);
   }
-    if(korak==2){
-      if(stroj.state=="t")
-        println("accept");
-      else if(stroj.state=="f")
-        println("reject");
-      else
-        println("nastavljam s radom");
-    }
-    if(korak==3){
-      //String[] inp={"7","9","0","2","4","6"};
-      String[] inp={"0"};
-      stroj.writeAll(inp,1,fourth);
-      stroj.returnAllToStart();
-    }
-    if(korak==4){
-      adresa=stroj.readAll(fourth);
-      println("adresa=");
-      println(adresa);
-      println("l je " + l);
-    }
+  if(korak==2){
+    //provjera je li pocetno stanje i zavrsno
+    if(stroj.state=="t")
+      println("Prihvaćam riječ");
+    else if(stroj.state=="f")
+      println("Odbijam riječ");
+    else
+      println("Nastavljam s radom");
+  }
+  if(korak==3){
+    //pocetna adresa 0 na 4. traku
+    String[] inp={"0"};
+    stroj.writeAll(inp,1,fourth);
+    println("JJ");
+    stroj.returnAllToStart();
+  }
+  if(korak==4){
+    //spremamo sadrzaj 4. trake u varijablu adresa
+    println("GGG");
+    adresa=stroj.readAll(fourth);
+  }
   if(korak==5){
     odbijeno=true;
-    println("odbijeno=" + odbijeno);
     gotovo=false;
+    dio=empty;
+    println("J");
   }
   if(korak==6){
+    //resetiramo traku gdje se simulira NTO,
+    //ostale vratimo na pocetak
     stroj.returnAllToStart();
-    second.content=empty;
+    second.start();
   }
   if(korak==7){
+    //ovaj i iduci korak su petlja:
+    //provjeravamo za svaki pocetni dio adrese
+    //je li vec odbijen
     if(gotovo){
+      //ako je odbijen preskacemo rad s tom adresom
       korak=12;
       return;
     }
     if(java.util.Arrays.equals(dio,adresa)){
+      //ako je pocetni dio isti kao adresa,
+      //a gotovo=false,
+      //znaci da nije jos odbijena,
+      //nastavljamo s radom
       korak+=2;
     }
     else korak++;
     stroj.getDio();
   }
   if(korak==8){
+    //trazimo dio na trecoj traci
     int find=findAddress(dio);
-    if(find==2){
-      stroj.read(-1,third);
-      korak--;
-      return;
-    }
-    else if(find==1){
+    if(find==1){
+      //na traci je i odbijen
       gotovo=true;
-      korak--;
-      return;
-    }
-    else{
-      korak--;
     }
     korak--;
+    //vracamo se u prethodni korak
+    //gdje nalazimo sljedeci dio
+    //i provjeravamo za njega, ako je potrebno
+    return;
   }
   if(korak==9){
     stroj.returnToStart(fourth);
-    third.goToEnd();
   }
   if(korak==10){
+    //ovaj korak je takodjer petlja
+    //citamo po jedan znak s 4. trake
+    //i obavljamo prijelaz, ako je moguc
+    //jasno, ako nije, ta se grana odbija
     String temp=stroj.read(1,fourth);
     if(!temp.equals(" ")){
       int intTemp=Integer.parseInt(temp);
-      println(intTemp);
       if(stroj.check(intTemp)){ 
         stroj.work(intTemp);
       }
       else{
+        //prijelaz nije moguc
+        //nastavljamo s iducim korakom
         stroj.state="f";
         korak++;
       }
@@ -324,19 +343,28 @@ void kod(){
     }
   }
   if(korak==11){
+    //zapisujemo adresu na trecu traku
+    stroj.goToEnd(third);
     for(int i=0;i<adresa.length;i++)
       stroj.write(adresa[i],1,third);
     if(stroj.state=="f")
+      //oznaka da je adresa odbijena
       stroj.write("X",1,third);
-    stroj.write("#",1,third);
+    stroj.write("#",1,third); //delimiter
   }
   if(korak==12){
     if(stroj.state=="t"){
-      println("accept");
-      exit();
+      println("Prihvaćam riječ");
+      lastPressed=false; //program završava
+      return;
     }
   }
   if(korak==13){
+    //zapisujemo pocetni dio do kojeg smo dosli
+    //i racunamo mu sljedecu adresu
+    //efekt ovoga je da npr za adresu 2000,
+    //ako vidimo da je odbijen vec dio 2,
+    //ne provjeravamo i svu drugu djecu od 2
     stroj.returnToStart(fourth);
     stroj.writeAll(dio,1,fourth);
     int tempAdrLength=adrLength;
@@ -345,12 +373,19 @@ void kod(){
     stroj.goToEnd(fourth);
     for(int i=fourth.head;i<adrLength;i++){
       stroj.write("0",1,fourth);
+      //dodajemo nule na kraj kako bi ostali na
+      //istoj dubini stabla
     }
     if(tempAdrLength==adrLength){
+      //idemo na pocetak glavne petlje
       korak=4;
       return;
     }
   }
+  //pri svakom povecavanju duljine adrese,
+  //provjeravamo jesmo li sve grane odbili
+  //to se moze raditi i cesce (nakon svake adrese),
+  //ali znatno usporava program
   if(korak==14){
     if(l==b){
       korak=4;

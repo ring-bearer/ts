@@ -142,11 +142,10 @@ class tape{
   
   //fja za crtanje trake na pocetku rada
   void start(){
-    drawTape();
     head=0;
     state="0";
-    drawHead(head);
-    input();
+    content=empty;
+    update();
   }
   
   //crta traku
@@ -370,6 +369,9 @@ class tape{
   void goToEnd(){
     while(head<content.length){
       read(1);
+    }
+    while(head>content.length){
+      read(-1);
     }
     return;
   }
