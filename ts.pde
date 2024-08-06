@@ -103,12 +103,12 @@ boolean odbijeno;
 //prati jesu li sve grane odbijene
 boolean gotovo;
 //prati je li trenutna grana odbijena
-String[] dio={};
-//pocetni dio trenutne adrese s kojim radimo
-String[] readT3={};
-//pomoc pri citanju adresa s 3. trake
 String[] empty={};
 //uvijek samo prazan niz stringova
+String[] dio=empty;
+//pocetni dio trenutne adrese s kojim radimo
+String[] readT3=empty;
+//pomoc pri citanju adresa s 3. trake
 int adrLength=1;
 //duljina trenutne adrese na 4. traci
 
@@ -153,8 +153,57 @@ void setup() {
   stroj.start();
   
   //izgled ekrana
-  size(1000, 640);
+  size(1000, 720);
   background(200);
+  
+  //ispis varijabli
+  textSize(20);
+  textAlign(LEFT);
+  text("Varijable:",30,520);
+  writeText();
+}
+
+void writeText(){
+  noStroke();
+  fill(200);
+  rect(30,525,600,600);
+  //kvadrat pokriva prethodni ispis
+  fill(0);
+  textSize(20);
+  textAlign(LEFT);
+  text("korak="+korak,30,550);
+  text("odbijeno="+odbijeno,30,580);
+  text("gotovo="+gotovo,30,610);
+  
+  
+  text("adrLength="+adrLength,220,550);
+  if(dio.equals(empty))
+    text("adresa=null",220,580);
+  else{
+    //radimo string od niza stringova
+    //za ljepsi/laksi ispis
+    int i;
+    String s="";
+    text("adresa={",220,580);
+    for(i=0;i<adresa.length;i++){
+      s=s+adresa[i];
+      if(i!=adresa.length-1) s=s+",";
+    }
+    text(s+"}",292,580);
+  }
+  
+  if(dio.equals(empty))
+    text("dio=null",220,610);
+  else{
+    int i;
+    String s="";
+    text("dio={",220,610);
+    for(i=0;i<dio.length;i++){
+      s=s+dio[i];
+      if(i!=dio.length-1) s=s+",";
+    }
+    text(s+"}",263,610);
+  }
 }
 
 //draw funkcija se neprestano ponovno izvrsava,
@@ -167,6 +216,8 @@ void draw() {
   if(lastPressed){
     kod(); //program iz dokaza
   }
+  
+  writeText(); //ispis stanja varijabli
 }
 
 //fja koja se poziva kod pritiska tipke
