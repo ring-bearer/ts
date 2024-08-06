@@ -87,48 +87,6 @@ String[][][] e={
 };
 
 
-/*
-char[][] delta={
-{0,'a',7,'a',2},
-{0,'b',7,'b',2},
-{1,'a',1,'a',1},
-{1,'b',1,'b',1},
-{1,' ',2,' ',0},
-{2,'a',3,' ',0},
-{3,'a',3,'a',0},
-{3,'b',3,'b',0},
-{3,' ',7,' ',1},
-{4,'a',4,'a',1},
-{4,'b',4,'b',1},
-{4,' ',5,' ',0},
-{5,'b',6,' ',0},
-{6,'a',6,'a',0},
-{6,'b',6,'b',0},
-{6,' ',7,' ',1},
-{7,'a',1,' ',1},
-{7,'b',4,' ',1},
-{7,' ','t',' ',1},
-};
-
-char[][] delta2={
-  {0,'0',1,'A',1},
-  {0,'B',4,'B',1},
-  {1,'B',1,'B',1},
-  {1,'0',1,'0',1},
-  {1,'1',2,'B',1},
-  {2,'C',2,'C',1},
-  {2,'1',2,'1',1},
-  {2,'2',3,'C',0},
-  {3,'1',3,'1',0},
-  {3,'0',3,'0',0},
-  {3,'B',3,'B',0},
-  {3,'C',3,'C',0},
-  {3,'A',0,'A',1},
-  {4,'B',4,'B',1},
-  {4,'C',4,'C',1},
-  {4,' ','t',' ',1},
-};
-*/
 
 //pomocne varijable
 
@@ -161,7 +119,7 @@ int adrLength=1;
 //broj mogucih prijelaza
 int b=z.length; //ili d.length, e.length
 //ulazna rijec
-String[] input={"a","a"};
+String[] input={"a","a","a"};
 //TS i njegove trake
 //mijenjati dolje u setupu
 machine stroj;
@@ -199,6 +157,9 @@ void setup() {
   background(200);
 }
 
+//draw funkcija se neprestano ponovno izvrsava,
+//brzinom zadanom sa frameRate=
+//broj slika po sekundi (default=60)
 void draw() {
   //iznova crta stroj
   stroj.update();
@@ -219,8 +180,6 @@ void keyPressed(){
     //pauziranje programa
   }
   //promjena brzine programa
-  //frameRate=broj slika po sekundi
-  //defaultni je 60
   if(key=='1'){
     frameRate(1);
   }
@@ -267,19 +226,17 @@ void kod(){
     //pocetna adresa 0 na 4. traku
     String[] inp={"0"};
     stroj.writeAll(inp,1,fourth);
-    println("JJ");
     stroj.returnAllToStart();
   }
   if(korak==4){
     //spremamo sadrzaj 4. trake u varijablu adresa
-    println("GGG");
+    //ovim korakom pocinje glavna petlja programa
     adresa=stroj.readAll(fourth);
   }
   if(korak==5){
     odbijeno=true;
     gotovo=false;
     dio=empty;
-    println("J");
   }
   if(korak==6){
     //resetiramo traku gdje se simulira NTO,
@@ -363,20 +320,21 @@ void kod(){
     //zapisujemo pocetni dio do kojeg smo dosli
     //i racunamo mu sljedecu adresu
     //efekt ovoga je da npr za adresu 2000,
-    //ako vidimo da je odbijen vec dio 2,
+    //ako smo vidjeli da je odbijen vec dio 2,
     //ne provjeravamo i svu drugu djecu od 2
     stroj.returnToStart(fourth);
     stroj.writeAll(dio,1,fourth);
     int tempAdrLength=adrLength;
-    sljedeca(dio);
+    sljedeca();
     dio=empty;
     stroj.goToEnd(fourth);
     for(int i=fourth.head;i<adrLength;i++){
       stroj.write("0",1,fourth);
-      //dodajemo nule na kraj kako bi ostali na
-      //istoj dubini stabla
+      //dodajemo nule na kraj kako bi ostali
+      //na istoj dubini stabla
     }
     if(tempAdrLength==adrLength){
+      //nije se povecala duljina adrese
       //idemo na pocetak glavne petlje
       korak=4;
       return;
@@ -387,32 +345,42 @@ void kod(){
   //to se moze raditi i cesce (nakon svake adrese),
   //ali znatno usporava program
   if(korak==14){
-    if(l==b){
+    //varijabla l prati je li provjera gotova
+    //za sve pocetne grane
+    
+    String charI=Integer.toString(l);
+    String[] chars={charI};
+    //provjera za iducu pocetnu granu
+    if(!kraj(chars)){
+      //ako neka grana nije odbijena,
+      //vracamo se na pocetak glavne petlje
+      odbijeno=false;
       korak=4;
       l=0;
       return;
     }
-      String charI=Integer.toString(l);
-      String[] chars={charI};
-      if(!kraj(chars)){
-        odbijeno=false;
+    l++;
+    if(l==b){ 
+      //provjera je gotova
+      if(odbijeno){
+        println("Odbijam riječ");
+        lastPressed=false;
       }
-      l++;
-    if(odbijeno){
-      println("reject");
-      exit();
-    }
-    
-    
+      //ako nije odbijeno opet idemo nazad
+      //na pocetak glavne petlje
+      korak=4;
+      l=0;
       return;
+    }
+    return;
   }
   korak++;
   return;
 }
 
-//racuna adresu poslije zadane
+//racuna adresu poslije one na 4. traci
 //i zapisuje ju na 4. traku
-void sljedeca(String[] adresa){
+void sljedeca(){
     int intTemp;
     int headTemp=1;
     String charTemp;
@@ -458,24 +426,27 @@ void sljedeca(String[] adresa){
    }
 }
 
+//provjera je li cvor na danoj adresi odbijen
 boolean kraj(String[] adresa){
-  boolean gotovo1=false;
+  boolean help=false;
   
   stroj.returnToStart(third);
   int find=findAddress(adresa);
-  if(find==1) return true;
-  if(find==0){
+  if(find==1) return true; //adresa je vec odbijena
+  if(find==0){ //jos nije odbijena
     for(int i=0;i<b;i++){
+      //provjera jesu li sva djeca cvora odbijena
+      //tad ce i sam cvor biti odbijen
       String charI=Integer.toString(i);
       String[] novaAdresa=append(adresa,charI);
-      gotovo1=kraj(novaAdresa);
-      if(gotovo1==false){
-        println("FALSE");
+      help=kraj(novaAdresa);
+      if(!help){
+        //dijete jos nije odbijeno - nije ni sam cvor
         break;
       }
     }
   }
-  return gotovo1;
+  return help;
 }
 
 //trazi danu adresu na trecoj traci

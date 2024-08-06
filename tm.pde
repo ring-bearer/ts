@@ -217,31 +217,7 @@ class tape{
       update();
       return r;
   }
-  
-  /*
-  //funkcija za citanje danog znaka
-  String readChar(String c, int dir){
-    String r;
-    if(head>=content.length) r=" ";
-    else r=content[head];
-    if(r.equals(c)){
-      if(dir==1){
-      head++;
-      }
-      else if (dir<=0){
-        head--;
-        if(head<0) head=0;
-      }
-      
-      update();
-      return r;
-    }
-    else{
-      return null;
-    }
-  }
-  */
-  
+
   //cita cijeli sadrzaj trake
   //(do zadnjeg nepraznog znaka)
   String[] readAll(){
@@ -321,30 +297,6 @@ class tape{
     return true;
   }
 
-/*
-  //koristeno za potpunu simulaciju rada DTO
-  String work(){
-    if(state.equals("t") || state.equals("f")) return state;
-    
-    boolean change=false;
-    for(int i=0;i<delta.length;i++){
-      String reading;
-      if(head>=content.length) reading=" ";
-      else reading=content[head];
-      if(delta[i][0]==state && delta[i][1].equals(reading)){
-        state=delta[i][2];
-        write(delta[i][3],Integer.parseInt(delta[i][4]));
-        change=true;
-        break;
-      }
-    }
-    
-    if(!change)
-      state="f";
-    
-    return state;
-  }
-  */
   
   
   //jednostavne pomocne funkcije
