@@ -121,9 +121,9 @@ int adrLength=1;
 //ovisno o zeljenom primjeru
 
 //broj mogucih prijelaza
-int b=z.length; //ili d.length, e.length
+int b=e.length; //ili d.length, z.length
 //ulazna riječ
-String[] input={"a","a","a"};
+String[] input={"0","0","1","1"};
 //TS i njegove trake
 //mijenjati dolje u setupu
 machine stroj;
@@ -142,18 +142,18 @@ void setup() {
   //inicijalizacija traka
   //prve dvije promjeniti ovisno o primjeru
   //umjesto al staviti al2,
-  //umjesto zetaTape1, deltaTape1 ili epsilonTape1
-  //umjesto deltaTape2, epsilonTape2
-  first=new tape(30,al,zetaTape1);
-  second=new tape(150,al,deltaTape2);
+  //umjesto epsilonTape1, deltaTape1 ili zetaTape1
+  //umjesto epsilonTape2, deltaTape2
+  first=new tape(30,al,epsilonTape1);
+  second=new tape(150,al,epsilonTape2);
   
   //ove trake ostaju iste
   third=new tape(270,address,null);
   fourth=new tape(390,address,null);
   
   tape[] tapes={first,second,third,fourth};
-  stroj=new machine(tapes,z); 
-  //ili d, e umjesto z
+  stroj=new machine(tapes,e); 
+  //ili d, z umjesto e
   
   //crtanje pocetne pozicije TS
   stroj.start();
