@@ -25,6 +25,9 @@ String[][] deltaTape2={
 {"5"," ","0","b","1"}
 };
 //za cijeli NTO
+//adresa ce biti niz integera
+//koji predstavljaju indekse 
+//elemenata(=prijelaza) u ovom nizu
 String[][][] d={
  {deltaTape1[0],deltaTape2[0]},
  {deltaTape1[1],deltaTape2[0]},
@@ -41,6 +44,7 @@ String[][][] d={
 
 //drugi primjer: neparni palindromi,
 //uz al i deltaTape2
+//razlika je u stvari samo u dva prijelaza
 String[][] zetaTape1={
 {"0","a","1","a","1"},
 {"0","b","1","b","1"},
@@ -128,6 +132,7 @@ tape first,second,third,fourth;
 
 void setup() {
   //za pracenje adresa na 3. i 4. traci
+  //ovo je isto za svaki primjer
   String[] address={"X","#"};
   for(int i=0;i<b;i++){
     String j=Integer.toString(i);
@@ -145,6 +150,7 @@ void setup() {
   //ove trake ostaju iste
   third=new tape(270,address,null);
   fourth=new tape(390,address,null);
+  
   tape[] tapes={first,second,third,fourth};
   stroj=new machine(tapes,z); 
   //ili d, e umjesto z
@@ -163,6 +169,7 @@ void setup() {
   writeText();
 }
 
+//ispis varijabli
 void writeText(){
   noStroke();
   fill(200);

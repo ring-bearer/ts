@@ -15,7 +15,7 @@ class machine{
   //dio s kojim se trenutno radi pamti se
   //u globalnoj varijabli dio
   void getDio(){
-    //adresa je zapisana na cevrtoj traci
+    //adresa je zapisana na cetvrtoj traci
     String c=fourth.read(1);
     if(c.equals(" ")) return;
     dio=append(dio,c);
@@ -195,6 +195,7 @@ class tape{
       else r=content[head];
       
       //update pozicije glave nakon citanja
+      //za dir>=2 ostaje na istom mjestu
       if(dir==1){
         head++;
       }
