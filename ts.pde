@@ -1,7 +1,7 @@
 //prvi primjer: parni palindromi
 //simulacija rada NTO je na prve dvije trake,
 //s tim da se prva traka samo cita
-//(ne mijenjamo ulaznu rijec)
+//(ne mijenjamo ulaznu riječ)
 
 //abeceda
 String[] al={"a","b"};
@@ -69,7 +69,7 @@ String[][][] z={
 };
 
 
-//treci primjer: rijeci oblika 0^n1^n
+//treci primjer: riječi oblika 0^n1^n
 String[] al2={"0","1"};
 String[][] epsilonTape1={
 {"0","0","0","0","1"},
@@ -122,7 +122,7 @@ int adrLength=1;
 
 //broj mogucih prijelaza
 int b=z.length; //ili d.length, e.length
-//ulazna rijec
+//ulazna riječ
 String[] input={"a","a","a"};
 //TS i njegove trake
 //mijenjati dolje u setupu
@@ -211,6 +211,15 @@ void writeText(){
     }
     text(s+"}",263,610);
   }
+  
+  if(!lastPressed){
+    if(stroj.state=="t"){
+      text("Prihvaćam riječ!",30,650);
+    }
+    if(stroj.state=="f"){
+      text("Odbijam riječ",30,650);
+    }
+  }
 }
 
 //draw funkcija se neprestano ponovno izvrsava,
@@ -268,15 +277,17 @@ void keyPressed(){
 //umjesto sve odjednom/prebrzo
 void kod(){
   if(korak==1){
-    //ulazna rijec na prvu traku
+    //ulazna riječ na prvu traku
     stroj.writeAll(input,1,first);
   }
   if(korak==2){
     //provjera je li pocetno stanje i zavrsno
-    if(stroj.state=="t")
+    if(stroj.state=="t"){
       println("Prihvaćam riječ");
-    else if(stroj.state=="f")
+    }
+    else if(stroj.state=="f"){
       println("Odbijam riječ");
+    }
     else
       println("Nastavljam s radom");
   }
@@ -402,6 +413,11 @@ void kod(){
   //provjeravamo jesmo li sve grane odbili
   //to se moze raditi i cesce (nakon svake adrese),
   //ali znatno usporava program
+  //opcenito ovo je najdugotrajniji dio,
+  //a zato sto je fja kraj() rekurzivna i izvan
+  //glavnog programa, na ekranu se ne vidi
+  //kretanje 3. trakom pri njenom radu
+  //rad se moze pratiti preko ispisa u konzoli
   if(korak==14){
     //varijabla l prati je li provjera gotova
     //za sve pocetne grane
@@ -490,6 +506,17 @@ boolean kraj(String[] adresa){
   
   stroj.returnToStart(third);
   int find=findAddress(adresa);
+  
+  //za ispis u konzoli
+  int k;
+  String s="{";
+  for(k=0;k<adresa.length;k++){
+    s=s+adresa[k];
+    if(k!=adresa.length-1) s=s+",";
+  }
+  s+="}";
+  println("Provjera kraja za adresu "+s);
+  
   if(find==1) return true; //adresa je vec odbijena
   if(find==0){ //jos nije odbijena
     for(int i=0;i<b;i++){
