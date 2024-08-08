@@ -4,7 +4,7 @@ Rađeno u Processingu (https://processing.org/download).
 Prilikom pokretanja programa, iscrtava se četverotračni Turingov stroj, kojim se upravlja sljedećim tipkama:
 - ENTER: pokretanje stroja
 - TAB: pauziranje stroja
-- 1: postavlja frameRate na 1 (iscrtava se jedna slika po sekundi).
+- 1: postavlja frameRate na 1 (iscrtava se jedna slika po sekundi).\
   Preporučeno za početak uporabe, za bolje praćenje događaja.
 - 3, 5, 6: postavlja frameRate na 30, 50 ili 60 (defaultni). Preporučeno za ubrzanje stroja.
 - RIGHT i LEFT: pauziraju stroj i omogućavaju kretanje desno/lijevo po trećoj traci.
