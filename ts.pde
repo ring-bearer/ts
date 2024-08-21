@@ -4,7 +4,7 @@
 //3 - rijeci oblika 0^n1^n
 int primjer=3;
 //unos ulazne riječi kao niza stringova
-String[] input={"0","0","1","1"};
+String[] input={"0","1"};
 
 
 

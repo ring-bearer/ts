@@ -10,6 +10,7 @@ Prilikom pokretanja programa, iscrtava se četverotračni Turingov stroj, kojim 
 - RIGHT i LEFT: pauziraju stroj i omogućavaju kretanje desno/lijevo po trećoj traci.
 
 Unutar koda može se birati između izvršavanja tri različita primjera uz proizvoljnu početnu riječ.
+Za detaljniji opis primjera i sučelja, pogledati sekciju Implementacija u NTO.pdf.
 Uz svaki primjer postoji i dijagram stanja/prijelaza (rađen uz pomoć https://madebyevan.com/fsm/) preko kojeg se lakše može pratiti simulacija NTO.
 Kako stroj obilazi cijelo stablo kojeg predstavlja rad NTO, rad mu je često dugotrajan,
 pa se preporučuju relativno kratke ulazne riječi. :)
