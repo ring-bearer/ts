@@ -1,3 +1,14 @@
+//odabir primjera:
+//1 - parni palindromi
+//2 - neparni palindromi
+//3 - rijeci oblika 0^n1^n
+int primjer=3;
+//unos ulazne riječi kao niza stringova
+String[] input={"0","0","1","1"};
+
+
+
+
 //prvi primjer: parni palindromi
 //simulacija rada NTO je na prve dvije trake,
 //s tim da se prva traka samo cita
@@ -103,7 +114,7 @@ int l=0;
 
 String[] adresa;
 //tu spremamo trenutnu adresu sa 4. trake
-boolean odbijeno;
+boolean kontrola;
 //prati jesu li sve grane odbijene
 boolean gotovo;
 //prati je li trenutna grana odbijena
@@ -116,21 +127,34 @@ String[] readT3=empty;
 int adrLength=1;
 //duljina trenutne adrese na 4. traci
 
-
-//sljedece varijable promjeniti
-//ovisno o zeljenom primjeru
-
 //broj mogucih prijelaza
-int b=e.length; //ili d.length, z.length
-//ulazna riječ
-String[] input={"0","0","1","1"};
+int b;
+//odabrana abeceda za primjer
+String[] alphabet;
+//odabrana delta funkcija za primjer
+String[][][] deltaFunction;
+
 //TS i njegove trake
-//mijenjati dolje u setupu
 machine stroj;
 tape first,second,third,fourth;
 
 
 void setup() {
+  //inicijalizacija ovisno o primjeru
+  if(primjer==1){
+    alphabet=al;
+    deltaFunction=d;
+  }
+  else if(primjer==2){
+    alphabet=al;
+    deltaFunction=z;
+  }
+  else{
+    alphabet=al2;
+    deltaFunction=e;
+  }
+  b=deltaFunction.length;
+  
   //za pracenje adresa na 3. i 4. traci
   //ovo je isto za svaki primjer
   String[] address={"X","#"};
@@ -140,20 +164,13 @@ void setup() {
   }
   
   //inicijalizacija traka
-  //prve dvije promjeniti ovisno o primjeru
-  //umjesto al staviti al2,
-  //umjesto epsilonTape1, deltaTape1 ili zetaTape1
-  //umjesto epsilonTape2, deltaTape2
-  first=new tape(30,al,epsilonTape1);
-  second=new tape(150,al,epsilonTape2);
-  
-  //ove trake ostaju iste
+  first=new tape(30,alphabet,deltaFunction[0]);
+  second=new tape(150,alphabet,deltaFunction[1]);
   third=new tape(270,address,null);
   fourth=new tape(390,address,null);
   
   tape[] tapes={first,second,third,fourth};
-  stroj=new machine(tapes,e); 
-  //ili d, z umjesto e
+  stroj=new machine(tapes,deltaFunction);
   
   //crtanje pocetne pozicije TS
   stroj.start();
@@ -173,13 +190,13 @@ void setup() {
 void writeText(){
   noStroke();
   fill(200);
-  rect(30,525,600,600);
+  rect(30,525,600,100);
   //kvadrat pokriva prethodni ispis
   fill(0);
   textSize(20);
   textAlign(LEFT);
   text("korak="+korak,30,550);
-  text("odbijeno="+odbijeno,30,580);
+  text("kontrola="+kontrola,30,580);
   text("gotovo="+gotovo,30,610);
   
   
@@ -215,9 +232,11 @@ void writeText(){
   if(!lastPressed){
     if(stroj.state=="t"){
       text("Prihvaćam riječ!",30,650);
+      stroj.returnAllToStart();
     }
     if(stroj.state=="f"){
-      text("Odbijam riječ",30,650);
+      text("Odbijam riječ!",30,650);
+      stroj.returnAllToStart();
     }
   }
 }
@@ -303,7 +322,7 @@ void kod(){
     adresa=stroj.readAll(fourth);
   }
   if(korak==5){
-    odbijeno=true;
+    kontrola=true;
     gotovo=false;
     dio=empty;
   }
@@ -428,7 +447,7 @@ void kod(){
     if(!kraj(chars)){
       //ako neka grana nije odbijena,
       //vracamo se na pocetak glavne petlje
-      odbijeno=false;
+      kontrola=false;
       korak=4;
       l=0;
       return;
@@ -436,8 +455,9 @@ void kod(){
     l++;
     if(l==b){ 
       //provjera je gotova
-      if(odbijeno){
+      if(kontrola){
         println("Odbijam riječ");
+        stroj.state="f";
         lastPressed=false;
       }
       //ako nije odbijeno opet idemo nazad
